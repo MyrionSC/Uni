@@ -1,0 +1,50 @@
+#lang racket
+
+(define a 2)
+(define b 3)
+(define c 4)
+(define d 5)
+(define e '())
+(define p '((a . b) . (c . d))) 
+(define l '(a b c d 6 7 8))
+
+;;; exercise 1.3
+(define (proper-list? x)
+  (if (null? x)
+      #t
+      (if (pair? x)
+          (proper-list? (cdr x))
+          #f)))
+
+;(proper-list? e)
+;(proper-list? p)
+;(proper-list? l)
+
+
+;;; exercise 1.5
+(define (ese lst)
+  (cond ((null? lst) '())
+        ((null? (cdr lst)) (list (car lst)))
+        (else (cons(car lst) (ese (cdr (cdr lst)))))))
+
+;;; exercise 5
+(define (my-list-tail lst n)
+  (cond ((= 0 n) lst)
+        ((null? (cdr lst)) '())
+        (else(my-list-tail (cdr lst) (- n 1)))))
+
+(define (list-prefix lst x)
+  (cond ((= 0 x) '())
+        ((null? lst) '())
+        (else (cons (car lst) (list-prefix (cdr lst) (- x 1))))))
+
+(my-list-tail l 123)
+
+(list-prefix l 2)
+
+
+
+
+
+
+

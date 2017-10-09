@@ -1,0 +1,20 @@
+#lang racket
+
+(define (discriminant a b c k)
+  (square b (lambda (v1)
+              (mult 4 a (lambda (v2)
+                         (mult v2 c (lambda (v3)
+                                      sub v1 v3 k)))))))
+  ;(k (sub (square b) (mult (mult 4 a) c))))
+
+; AUX functions:
+(define (square a)
+  (mult a a))
+
+(define (mult a b)
+  (* a b))
+
+(define (sub a b)
+  (- a b))
+
+;(discriminant 2 7 4 (lambda (x) x))

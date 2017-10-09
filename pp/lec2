@@ -1,0 +1,37 @@
+#lang racket
+
+(define l (list 1 2 3 4 5))
+
+;; exercise 2.2
+(define (replicate-to-length lst len)
+  (replicate-to-length-iter lst lst '() 0 len))
+(define (replicate-to-length-iter lst orig-lst result count len)
+  (cond ((null? lst) (replicate-to-length-iter orig-lst orig-lst result (- count 1) len))
+        ((> count 0) (replicate-to-length-iter (cdr lst) orig-lst (cons result (car lst)) (- count 1) len))
+        (else result)))
+
+;; exercise 2.11
+(define (make-cmp lt)
+  (lambda (x y)
+    (cond ((lt x y) 1)
+          ((lt y x) -1)
+          (else 0))))
+(define cmp1 (make-cmp <))
+;(cmp1 1 2)
+
+;; exercise 2.21
+(define (derive f)
+  (lambda (x)
+    (* x ((sqrt (f x))))))
+;(define mysquare (derive (* 2 2)))
+
+;; exercise 2.16
+(define (for-all lst p)
+  (equal? (filter p lst) lst))
+(for-all l number?)
+
+
+
+
+
+  

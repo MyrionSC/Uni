@@ -1,0 +1,33 @@
+#lang racket
+
+(define (fact n)
+  (cond ((= n 0)
+        1)
+        (else (* (fact (- n 1)) n))))
+
+(fact 6)
+
+
+;(force (delay (+ 5 6)))
+(define (stream lst)
+  (cond ((eqv? (cdr lst) '())
+         '())
+        (else (cons (car lst) (delay (stream (cdr lst)))))))
+
+(define l1 '(a b c 1 2 3 4 5 6))
+(stream l1)
+
+(define head car)
+(define (tail stream) (force (cdr stream)))
+(define empty-stream? null?)
+(define the-empty-stream '())
+
+(define (cons-stream n stream)
+  (cond ((= n 0)
+         stream)
+        (else (cons (head stream) (cons-stream (- n 1) (tail stream))))))
+
+(cons-stream 5 (stream l1))
+
+
+

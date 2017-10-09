@@ -1,0 +1,53 @@
+#lang racket
+
+(define (point x y)
+  (letrec ((getx    (lambda () x))
+           (gety    (lambda () y))
+           (add     (lambda (p) 
+                      (point 
+                       (+ x (send 'getx p))
+                       (+ y (send 'gety p)))))
+           (type-of (lambda () 'point))
+          )
+    (lambda (message)
+      (cond ((eq? message 'getx) getx)
+            ((eq? message 'gety) gety)
+            ((eq? message 'add)  add)
+            ((eq? message 'type-of) type-of)
+            (else (error "Message not understood"))))))
+
+(define (send message obj . par)
+  (let ((method (obj message)))
+    (apply method par)))
+
+
+
+
+
+(define p1 (point 1 2))
+(define p2 (point 3 4))
+(define p3 (point 5 6))
+
+(define (pointinfo p)
+  (list (send 'getx p) (send 'gety p)))
+
+(define plist1 (list p1 p2 p3))
+(define plist2 (list (point 7 8) (point 9 10) (point 11 12)))
+
+(define (add-plist-pairs lst1 lst2)
+  (if (null? lst1) '()
+  (append (list (pointinfo (send 'add (car lst1) (car lst2)))) (add-plist-pairs (cdr lst1) (cdr lst2)))))
+;  ((send 'add (car lst1) (car lst2))))
+;(pointinfo (send 'add (car plist1) (car plist2)))
+;(send 'getx (car (add-plist-pairs plist1 plist2)))
+(add-plist-pairs plist1 plist2)
+
+;(send 'getx (send 'add p1 p2))
+
+;(pointinfo p1)
+;(send 'getx p1)
+
+
+
+
+
