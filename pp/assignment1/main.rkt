@@ -43,18 +43,22 @@
 (define n1 (note 1 2 3))
 (define p1 (pause 123))
 (define s1 (seq (list n1 p1)))
+(define par1 (par (list s1)))
 (define text "test")
 
-;;; element predicates
+
+;;; 2 - element predicates
 (define (music-element-pred? type)
   (lambda (me)
     (and (music-element? me) (eqv? (music-element-type me) type))))
+
 (define note? (music-element-pred? 'note))
 (define pause? (music-element-pred? 'pause))
 (define seq? (music-element-pred? 'seq))
 (define par? (music-element-pred? 'par))
 
-;;; selectors
+
+;;; 3: selectors
 (define (get-note-item index)
   (lambda (n)
     (if (note? n) (get-item (music-element-props n) index)
@@ -73,17 +77,15 @@
 
 
 
+;;; 4: scale, transpose and reinstrument functions
 
+;;; 5: duration of music element function
 
-;;; scale, transpose and reinstrument functions
+;;; 6: is monophonic function
 
-;;; duration of music element function
+;;; 7: degree of polyphony function
 
-;;; is monophonic function
-
-;;; degree of polyphony function
-
-;;; transform to list of note-abs-time-with-duration
+;;; 8: transform to list of note-abs-time-with-duration
 
 
 
