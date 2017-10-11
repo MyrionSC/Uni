@@ -6,10 +6,10 @@
 
 
 ;;; helper functions
-
-
-
-
+(define (get-item lst n)
+  (if (eqv? lst '()) (raise "Out of index" #t)
+      (if (= n 0) (car lst)
+          (get-item (cdr lst) (- n 1)))))
 
 ;;; model
 
@@ -26,32 +26,50 @@
 ;;; 1: create constructors for music elements
 
 ;;; create super element
-(struct music-element (type children props))
+(struct music-element (type els props))
 
 ;;; create specific elements
 (define (note pit dur ins)
   (music-element 'note '() (list pit dur ins)))
-
-
-
-(define (seq children)
-  (music-element 'seq children '()))
-
+(define (pause dur)
+  (music-element 'pause '() (list dur)))
+(define (seq els)
+  (music-element 'seq els '()))
+(define (par els)
+  (music-element 'par els '()))
 
 
 ;;; test inits
-(define m1 (music-element 0 0 0))
-(define n1 (note 0 0 0))
+(define n1 (note 1 2 3))
+(define p1 (pause 123))
+(define s1 (seq (list n1 p1)))
 (define text "test")
-(music-element-type m1)
 
 ;;; element predicates
-(define (note? n)
-  (if (and (music-element? n) (eqv? (music-element-type n) 'note)) #t
-      #f))
+(define (music-element-pred? type)
+  (lambda (me)
+    (and (music-element? me) (eqv? (music-element-type me) type))))
+(define note? (music-element-pred? 'note))
+(define pause? (music-element-pred? 'pause))
+(define seq? (music-element-pred? 'seq))
+(define par? (music-element-pred? 'par))
 
 ;;; selectors
+(define (get-note-item index)
+  (lambda (n)
+    (if (note? n) (get-item (music-element-props n) index)
+        (raise "type not note" #t))))
+(define get-note-pit (get-note-item 0))
+(define get-note-dur (get-note-item 1))
+(define get-note-ins (get-note-item 2))
 
+(define (get-pause-dur p)
+    (if (pause? p) (get-item (music-element-props p) 0)
+        (raise "type not pause" #t)))
+
+(define (get-els me)
+  (if (or (seq? me) (par? me)) (music-element-els me)
+      (raise "element not sequence or paralel music element")))
 
 
 
