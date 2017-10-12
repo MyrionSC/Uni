@@ -1,15 +1,31 @@
 #lang racket
 
 (require "music-base.rkt")
-;test data
-(define notelist (list (note-abs-time-with-duration 0 1 60 80 1920) (note-abs-time-with-duration 1920 1 64 80 960) (note-abs-time-with-duration 2880 1 62 80 1920) (note-abs-time-with-duration 4800 1 64 80 960) (note-abs-time-with-duration 5760 1 60 80 1920) (note-abs-time-with-duration 7680 1 59 80 960) (note-abs-time-with-duration 8640 1 57 80 1920) (note-abs-time-with-duration 10560 1 60 80 960) (note-abs-time-with-duration 11520 1 64 80 1920) (note-abs-time-with-duration 13440 1 64 80 960) (note-abs-time-with-duration 14400 1 64 80 1920) (note-abs-time-with-duration 16320 1 60 80 960) (note-abs-time-with-duration 17280 1 57 80 3840)))
-
 
 ;;; helper functions
 (define (get-item lst n)
   (if (eqv? lst '()) (raise "Out of index" #t)
       (if (= n 0) (car lst)
           (get-item (cdr lst) (- n 1)))))
+(define (! pred)
+  (if (eqv? pred #t) #f #t))
+
+;;; global variables
+(define piano 0)
+(define organ 1)
+(define guitar 2)
+(define violin 3)
+(define flute 4)
+(define trumpet 5)
+(define helicopter 6)
+(define telephone 7)
+
+(define sec 960)
+(define eight (/ sec 8))
+(define quarter (/ sec 4))
+(define half (/ sec 2))
+(define full sec)
+
 
 ;;; model
 
@@ -37,15 +53,6 @@
   (music-element 'seq els '()))
 (define (par els)
   (music-element 'par els '()))
-
-
-;;; test inits
-(define n1 (note 1 2 3))
-(define p1 (pause 123))
-(define s1 (seq (list n1 p1)))
-(define par1 (par (list s1)))
-(define text "test")
-
 
 ;;; 2 - element predicates
 (define (music-element-pred? type)
@@ -87,31 +94,41 @@
 
 ;;; 8: transform to list of note-abs-time-with-duration
 
+(define (transform-to-note-abs-time-with-duration me)
+  (cond ((! (music-element? me)) (raise "input not music element" #t))
+        
+        ;; should be in helper
+        ((note? me) "note") ;transform to note-abs
+        ((pause? me) "pause") ;ignore
+        ((seq? me) "seq") ;call recursively on all elements
+        ("par"))) ;call recursively on all elements
 
-
-;(struct note (pitch duration instrument))
-
-;(define n (note 0 0 0))
-;(note-pitch n)
-
-
-;(define-values (struct:a make-a a? a-ref a-set!)
-;  (make-struct-type 'a #f 2 1 'uninitialized))
-
-;(define an-a (make-a 'x 'y))
-;(define a-first (make-struct-field-accessor a-ref 0))
-
-;(define-values (struct:b make-b b? b-ref b-set!)
-;  (make-struct-type 'b struct:a 1 2 'b-uninitialized))
-;(define a-b (make-b 'x 'y 'z))
+;transform-to-note-abs-time-with-duration-helper (me, dur, res)
 
 
 
 
+;;; test
+(define n1 (note 1 2 3))
+(define p1 (pause 123))
+(define s1 (seq (list n1 p1)))
+(define par1 (par (list s1)))
+(define text "test")
+
+;; music element
+;;   - Note (pitchvalue, duration, instrument)
+;;   - pause (duration)
+;;   - sequentialMusicElement (musicElements)
+;;   - parallelMusicElement (musicElements)
+
+;; pitchvalue: int between 0 and 127
+;; duration: timeunit where 960 is a second
+;; instruments: Piano, Organ, Guitar, Violin, Flute, Trumpet, Helicopter, Telephone
+
+;;; canon
+(define peter-jakob (seq (list (note 60 half piano) (pause half) (note 60 half piano) (pause half) (note 60 half piano) (pause half) (note 60 half piano) (pause half) (note 60 half piano))))
+(transform-to-note-abs-time-with-duration peter-jakob)
 
 
-
-
-
-
-(transform-to-midi-file-and-write-to-file! notelist "generated-music.mid")
+;(define notelist (list (note-abs-time-with-duration 0 1 60 80 1920) (note-abs-time-with-duration 1920 1 64 80 960) (note-abs-time-with-duration 2880 1 62 80 1920) (note-abs-time-with-duration 4800 1 64 80 960) (note-abs-time-with-duration 5760 1 60 80 1920) (note-abs-time-with-duration 7680 1 59 80 960) (note-abs-time-with-duration 8640 1 57 80 1920) (note-abs-time-with-duration 10560 1 60 80 960) (note-abs-time-with-duration 11520 1 64 80 1920) (note-abs-time-with-duration 13440 1 64 80 960) (note-abs-time-with-duration 14400 1 64 80 1920) (note-abs-time-with-duration 16320 1 60 80 960) (note-abs-time-with-duration 17280 1 57 80 3840)))
+;(transform-to-midi-file-and-write-to-file! notelist "generated-music.mid")
