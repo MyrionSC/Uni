@@ -37,7 +37,16 @@
 ;;; 1: create constructors for music elements
 
 ;; create super element
-(struct music-element (type els props))
+(struct music-element (type els props)
+  #:transparant
+  #:guard (lambda (type els props type-name)
+            (cond ((
+                      
+                    ;[(string? name) name]
+                    ;[(symbol? name) (symbol->string name)]
+                    ;[else (error type-name
+                    ;             "bad name: ~e"
+                    ;             name)])))
 
 ;; create specific elements
 (define (note pit dur ins)
@@ -110,20 +119,9 @@
         ((if (par? (head me)) (append (transform-helper (head me) abstime) (transform-helper (tail me) abstime))
              (append (transform-helper (head me) abstime) (transform-helper (tail me) (+ abstime (get-music-dur (head me)))))))))
 
-;(define testelement (seq (list (note 60 half piano) (pause half) (seq (list (par (list (note 60 half piano))) (note 60 half piano))))))
-;(define testelement (seq (list (note 60 half piano) (pause half) (note 60 half piano))))
-;(define testseq (seq (list testelement (par (list testelement)) (pause 100) testelement)))
 
 
-;"how it should look"
-;(define notelist (list (note-abs-time-with-duration 0 1 60 80 1920) (note-abs-time-with-duration 1920 1 64 80 960) (note-abs-time-with-duration 2880 1 62 80 1920) (note-abs-time-with-duration 4800 1 64 80 960) (note-abs-time-with-duration 5760 1 60 80 1920) (note-abs-time-with-duration 7680 1 59 80 960) (note-abs-time-with-duration 8640 1 57 80 1920) (note-abs-time-with-duration 10560 1 60 80 960) (note-abs-time-with-duration 11520 1 64 80 1920) (note-abs-time-with-duration 13440 1 64 80 960) (note-abs-time-with-duration 14400 1 64 80 1920) (note-abs-time-with-duration 16320 1 60 80 960) (note-abs-time-with-duration 17280 1 57 80 3840)))
-;(define notelist (list (note-abs-time-with-duration 0 1 60 80 1920) (note-abs-time-with-duration 1920 1 64 80 960) (note-abs-time-with-duration 2880 1 62 80 1920)))
-;notelist
-;(transform-to-midi-file-and-write-to-file! notelist "generated-music.mid")
-
-
-
-
+;;; canon
 (define mester-jakob (seq (list
                            (note 65 480 piano)
                            (note 67 480 piano)
@@ -160,6 +158,7 @@
                           (note 65 480 piano)
                           (note 60 480 piano)
                           (note 65 960 piano))))
+
 (define song (seq (list mester-jakob hvor-er-du ringer-du-med-klokken bim-bam-bum)))
 (define canon (seq (list
                     mester-jakob
@@ -170,13 +169,5 @@
                     (par (list song))
                     bim-bam-bum)))
 
-
 (define abscanon (transform-to-note-abs-time-with-duration canon))
 (transform-to-midi-file-and-write-to-file! abscanon "mester-jakob.mid")
-
-
-;my-melody
-;(define mester-jakob (transform-to-note-abs-time-with-duration my-melody))
-;mester-jakob
-;(transform-to-midi-file-and-write-to-file! mester-jakob "mester-jakob.mid")
-
