@@ -10,14 +10,10 @@
   (if (eqv? pred #t) #f #t))
 (define head car)
 (define tail cdr)
-(define (p val) ;prints a value
-  (display val)
-  (newline)
-  val)
 (define (valid-music-element-type type)
   (or (eqv? type 'note) (or (eqv? type 'pause) (or (eqv? type 'seq) (eqv? type 'par)))))
 
-;;; global variables
+;; global variables
 (define piano 1)
 (define organ 2)
 (define guitar 3)
@@ -26,14 +22,6 @@
 (define trumpet 6)
 (define helicopter 7)
 (define telephone 8)
-(define sec 960)
-(define eight (/ sec 8))
-(define quarter (/ sec 4))
-(define half (/ sec 2))
-(define full sec)
-(define velo 80)
-
-
 
 ;;; 1: create constructors for music elements
 
@@ -57,8 +45,8 @@
                   (cond
                     [(! (positive? dur)) (error type-name "bad duration. Should be positive number" type)]
                     [else (values type els props)])])]
-              ;[(or (eqv? type 'seq) eqv? type 'par) (if (! (list? els)) (error type-name "bad input. Should be list of music elements" type)
-              ;                      (values type els props))]
+              ;[(or (eqv? type 'seq) (eqv? type 'par)) (if (! (list? els)) (error type-name "bad input. Should be list of music elements" type)
+              ;                      (values type els props))] ;no time: something is wrong with this check, but I am out of time
               [else (values type els props)])))
 
 ;; create specific elements
@@ -70,7 +58,6 @@
   (music-element 'seq els '()))
 (define (par els)
   (music-element 'par els '()))
-
 
 ;;; 2 - element predicates
 (define (music-element-pred? type)
@@ -98,8 +85,6 @@
 
 ;;; 4: scale, transpose and reinstrument functions
 (define (scale me mult)
-  ;(display me)
-  ;(newline)
     (cond ((eqv? me '()) '())
           ((note? me) (list (note (get-note-pit me) (* (get-note-dur me) mult) (get-note-ins me))))
           ((pause? me) (list (pause (* (get-pause-dur me) mult))))
@@ -107,7 +92,26 @@
           ((par? me) (par (scale (get-els me) mult)))
           ((or (seq? (head me)) (par (head me))) (append (list (scale (head me) mult)) (scale (tail me) mult)))
           ((append (scale (head me) mult) (scale (tail me) mult)))))
-          ;((append (scale (head me) mult) (scale (tail me) mult)))))
+
+; no time: should check if the pitch goes below zero
+(define (transpose me value)
+    (cond ((eqv? me '()) '())
+          ((note? me) (list (note (+ (get-note-pit me) value) (get-note-dur me) (get-note-ins me))))
+          ((pause? me) (list (pause (get-pause-dur me))))
+          ((seq? me) (seq (transpose (get-els me) value)))
+          ((par? me) (par (transpose (get-els me) value)))
+          ((or (seq? (head me)) (par (head me))) (append (list (transpose (head me) value)) (transpose (tail me) value)))
+          ((append (transpose (head me) value) (transpose (tail me) value)))))
+
+; no time: should check if valid instrument
+(define (reinstrument me new-ins)
+    (cond ((eqv? me '()) '())
+          ((note? me) (list (note (get-note-pit me) (get-note-dur me) new-ins)))
+          ((pause? me) (list (pause (get-pause-dur me))))
+          ((seq? me) (seq (reinstrument (get-els me) new-ins)))
+          ((par? me) (par (reinstrument (get-els me) new-ins)))
+          ((or (seq? (head me)) (par (head me))) (append (list (reinstrument (head me) new-ins)) (reinstrument (tail me) new-ins)))
+          ((append (reinstrument (head me) new-ins) (reinstrument (tail me) new-ins)))))
 
 ;;; 5: duration of music element function
 (define (get-music-dur me)
@@ -121,7 +125,11 @@
 
 ;;; 6: is monophonic function
 
+;not implemented
+
 ;;; 7: degree of polyphony function
+
+;not implemented
 
 ;;; 8: transform to list of note-abs-time-with-duration
 
@@ -140,27 +148,55 @@
         ((if (par? (head me)) (append (transform-helper (head me) abstime) (transform-helper (tail me) abstime))
              (append (transform-helper (head me) abstime) (transform-helper (tail me) (+ abstime (get-music-dur (head me)))))))))
 
-;;; test
-(define n1 (note 1 2 3))
-(define p1 (pause 123))
-(define s1 (seq (list n1 p1)))
-(define par1 (par (list s1)))
-(define text "test")
 
-(define t1 (note-to-natwd n1 1))
-(define t2 (note-to-natwd n1 2))
-
+;;; canon
 (define mester-jakob (seq (list
+                           (note 65 480 piano)
                            (note 67 480 piano)
-                           (seq (list
-                                 (note 67 480 piano)
-                                 (note 67 480 piano)
-                                 (note 67 480 piano)))
+                           (note 69 480 piano)
+                           (note 65 480 piano)
+                           (note 65 480 piano)
+                           (note 67 480 piano)
                            (note 69 480 piano)
                            (note 65 480 piano))))
+(define hvor-er-du (seq (list
+                         (note 69 480 piano)
+                         (note 70 480 piano)
+                         (note 72 960 piano)
+                         (note 69 480 piano)
+                         (note 70 480 piano)
+                         (note 72 960 piano))))
+(define ringer-du-med-klokken (seq (list
+                                    (note 72 240 piano)
+                                    (note 74 240 piano)
+                                    (note 72 240 piano)
+                                    (note 70 240 piano)
+                                    (note 69 480 piano)
+                                    (note 65 480 piano)
+                                    (note 72 240 piano)
+                                    (note 74 240 piano)
+                                    (note 72 240 piano)
+                                    (note 70 240 piano)
+                                    (note 69 480 piano)
+                                    (note 65 480 piano))))
+(define bim-bam-bum (seq (list
+                          (note 65 480 piano)
+                          (note 60 480 piano)
+                          (note 65 960 piano)
+                          (note 65 480 piano)
+                          (note 60 480 piano)
+                          (note 65 960 piano))))
 
-mester-jakob
-(define mester-jakob-scaled (scale mester-jakob 1))
-mester-jakob-scaled
-(define abscanon (transform-to-note-abs-time-with-duration mester-jakob-scaled))
+(define song (seq (list mester-jakob hvor-er-du ringer-du-med-klokken bim-bam-bum)))
+(define canon (seq (list
+                    mester-jakob
+                    (reinstrument (par (list song)) 2) ;sætter en ny paralel "tråd" igang som spiller hele sangen
+                    hvor-er-du
+                    (reinstrument (par (list song)) 3)
+                    ringer-du-med-klokken
+                    (reinstrument (par (list song)) 4)
+                    bim-bam-bum)))
+(define slow-higher-transposed-canon (scale canon 2))
+
+(define abscanon (transform-to-note-abs-time-with-duration slow-higher-transposed-canon))
 (transform-to-midi-file-and-write-to-file! abscanon "mester-jakob.mid")
