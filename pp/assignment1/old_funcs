@@ -1,0 +1,20 @@
+
+  (cond ((note? me) "note") ;transform to note-abs
+        ((pause? me) "pause") ;get duration somehow
+        ((seq? me) "seq")  ;call recursively on all elements
+        ((par? me) "par")
+        ("maybe list?")))
+
+(define (music-element-walk basecase notef pausef seqf parf listf)
+  (lambda (me)
+    (cond ((eqv? me '()) basecase)
+          ((note? me) (notef me)) ;transform to note-abs
+          ((pause? me) (pausef me)) ;get duration somehow
+          ((seq? me) (seqf me)) ;call recursively on all elements
+          ((par? me) (parf))
+          (listfunc me))))
+
+(define (get-music-dur-listfunc func me)
+  (if (par? (head me)) (max (func (head me)) (func (tail me)))
+      (+ (func (head me)) (func (tail me)))))
+

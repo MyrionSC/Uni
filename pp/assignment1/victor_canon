@@ -1,0 +1,47 @@
+(define my-melody (seq
+                                                  (list
+                                                   (note 65 480 'piano)
+                                                   (note 67 480 'piano)
+                                                   (note 69 480 'piano)
+                                                   (note 65 480 'piano)
+                                                   (note 65 480 'piano)
+                                                   (note 67 480 'piano)
+                                                   (note 69 480 'piano)
+                                                   (note 65 480 'piano)
+                                                   (note 69 480 'piano)
+                                                   (note 70 480 'piano)
+                                                   (note 72 960 'piano)
+                                                   (note 69 480 'piano)
+                                                   (note 70 480 'piano)
+                                                   (note 72 960 'piano)
+                                                   (note 72 240 'piano)
+                                                   (note 74 240 'piano)
+                                                   (note 72 240 'piano)
+                                                   (note 70 240 'piano)
+                                                   (note 69 480 'piano)
+                                                   (note 65 480 'piano)
+                                                   (note 72 240 'piano)
+                                                   (note 74 240 'piano)
+                                                   (note 72 240 'piano)
+                                                   (note 70 240 'piano)
+                                                   (note 69 480 'piano)
+                                                   (note 65 480 'piano)
+                                                   (note 65 480 'piano)
+                                                   (note 60 480 'piano)
+                                                   (note 65 960 'piano)
+                                                   (note 65 480 'piano)
+                                                   (note 60 480 'piano)
+                                                   (note 65 960 'piano)
+                                                   )))
+
+
+
+(define my-new-canon (par
+                                   (list my-melody
+                                         (seq
+                                                       (list (pause 3840)
+                                                             (re-instrument (transpose my-melody 12) 'flute)))
+                                         (seq
+                                                       (list (pause 7680)
+                                                             (re-instrument (transpose my-melody -12) 'guitar))))
+                                   ))

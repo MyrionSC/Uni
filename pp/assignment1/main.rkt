@@ -82,19 +82,26 @@
           ((if (par? (head me)) (max (get-music-dur (head me)) (get-music-dur (tail me)))
                (+ (get-music-dur (head me)) (get-music-dur (tail me)))))))
 
+
+
 ;;; 6: is monophonic function
 
 ;;; 7: degree of polyphony function
 
 ;;; 8: transform to list of note-abs-time-with-duration
 
+(define (note-to-natwd abstime n)
+  (note-abs-time-with-duration abstime (get-note-ins n) (get-note-pit n) 80 (get-note-dur n)))
+(define (pause-to-natwd abstime p)
+  (note-abs-time-with-duration abstime 0 0 0 (get-pause-dur p)))
+
 (define (transform-to-note-abs-time-with-duration me)
   (cond ((! (music-element? me)) (raise "input not music element" #t))
-        ((cdr (transform-helper me 0)))))
+        (transform-helper me 0)))
 
 
-(define (transform-helper me dur)
-  (cond ((note? me) (cons (+ dur (get-note-dur me)) '())) ;transform to note-abs
+(define (transform-helper me abstime)
+  (cond ((note? me) (note-to-natwd abstime me)) ;transform to note-abs
         ((pause? me) "pause") ;get duration somehow
         ((seq? me) "seq")  ;call recursively on all elements
         ((par? me) "par")
@@ -109,16 +116,16 @@
         ;("par"))) ;call recursively on all elements
 
 ;;; test
-(define n3 (note 60 half piano))
-(define tel (par (list (note 60 half piano) (pause half) (note 60 half piano) (seq (list (note 60 full piano) (pause quarter))) (par (list (note 60 full piano) (note 60 full piano) (pause quarter))))))
-;(get-music-dur tel)
-
-
 (define n1 (note 1 2 3))
 (define p1 (pause 123))
 (define s1 (seq (list n1 p1)))
 (define par1 (par (list s1)))
 (define text "test")
+
+(define testelement (seq (list (note 60 half piano) (pause half) (note 60 half piano))))
+(define testseq (seq (list testelement (par (list testelement)) (pause 100) testelement)))
+
+(transform-to-note-abs-time-with-duration testseq)
 
 ;; music element
 ;;   - Note (pitchvalue, duration, instrument)
@@ -130,18 +137,56 @@
 ;; duration: timeunit where 960 is a second
 ;; instruments: Piano, Organ, Guitar, Violin, Flute, Trumpet, Helicopter, Telephone
 
-;;; canon
-(define test (note 60 half piano))
-(define testelement (seq (list (note 60 half piano) (pause half) (note 60 half piano))))
-(define peter-jakob (seq (list (note 60 half piano) (pause half) (note 60 half piano) (pause half) (note 60 half piano) (pause half) (note 60 half piano) (pause half) (note 60 half piano))))
-;(transform-to-note-abs-time-with-duration test)
-
 ;abs-time:	A non-negative integer, in time ticks. The absolute start time of the note.
 ;channel:	An integer between 1 and 16. The MIDI channel allocated to the requested instrument. Se the miniproject formulation for more details.
 ;note-number:	An integer between 0 and 127. The MIDI note number.
 ;velocity:	An integer between 0 and 127. The velocity (strength) of the note. Not controllable in this exercise. It can be a constant, such as 80.
 ;duration:	A non-negative integer. The duration of this note (a number of time ticks).
- 
+
+
 
 ;(define notelist (list (note-abs-time-with-duration 0 1 60 80 1920) (note-abs-time-with-duration 1920 1 64 80 960) (note-abs-time-with-duration 2880 1 62 80 1920) (note-abs-time-with-duration 4800 1 64 80 960) (note-abs-time-with-duration 5760 1 60 80 1920) (note-abs-time-with-duration 7680 1 59 80 960) (note-abs-time-with-duration 8640 1 57 80 1920) (note-abs-time-with-duration 10560 1 60 80 960) (note-abs-time-with-duration 11520 1 64 80 1920) (note-abs-time-with-duration 13440 1 64 80 960) (note-abs-time-with-duration 14400 1 64 80 1920) (note-abs-time-with-duration 16320 1 60 80 960) (note-abs-time-with-duration 17280 1 57 80 3840)))
 ;(transform-to-midi-file-and-write-to-file! notelist "generated-music.mid")
+
+
+
+
+
+
+
+
+;;; canon
+(define my-melody (seq  (list
+                           (note 65 480 piano)
+                           (note 67 480 piano)
+                           (note 69 480 piano)
+                           (note 65 480 piano)
+                           (note 65 480 piano)
+                           (note 67 480 piano)
+                           (note 69 480 piano)
+                           (note 65 480 piano)
+                           (note 69 480 piano)
+                           (note 70 480 piano)
+                           (note 72 960 piano)
+                           (note 69 480 piano)
+                           (note 70 480 piano)
+                           (note 72 960 piano)
+                           (note 72 240 piano)
+                           (note 74 240 piano)
+                           (note 72 240 piano)
+                           (note 70 240 piano)
+                           (note 69 480 piano)
+                           (note 65 480 piano)
+                           (note 72 240 piano)
+                           (note 74 240 piano)
+                           (note 72 240 piano)
+                           (note 70 240 piano)
+                           (note 69 480 piano)
+                           (note 65 480 piano)
+                           (note 65 480 piano)
+                           (note 60 480 piano)
+                           (note 65 960 piano)
+                           (note 65 480 piano)
+                           (note 60 480 piano)
+                           (note 65 960 piano))))
+
