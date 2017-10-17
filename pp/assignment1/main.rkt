@@ -13,14 +13,14 @@
 (define tail cdr)
 
 ;;; global variables
-(define piano 0)
-(define organ 1)
-(define guitar 2)
-(define violin 3)
-(define flute 4)
-(define trumpet 5)
-(define helicopter 6)
-(define telephone 7)
+(define piano 1)
+(define organ 2)
+(define guitar 3)
+(define violin 4)
+(define flute 5)
+(define trumpet 6)
+(define helicopter 7)
+(define telephone 8)
 (define sec 960)
 (define eight (/ sec 8))
 (define quarter (/ sec 4))
@@ -90,30 +90,22 @@
 
 ;;; 8: transform to list of note-abs-time-with-duration
 
-(define (note-to-natwd abstime n)
+
+
+(define (note-to-natwd n abstime)
   (note-abs-time-with-duration abstime (get-note-ins n) (get-note-pit n) 80 (get-note-dur n)))
-(define (pause-to-natwd abstime p)
-  (note-abs-time-with-duration abstime 0 0 0 (get-pause-dur p)))
 
 (define (transform-to-note-abs-time-with-duration me)
   (cond ((! (music-element? me)) (raise "input not music element" #t))
-        (transform-helper me 0)))
-
+        ((transform-helper me 0))))
 
 (define (transform-helper me abstime)
-  (cond ((note? me) (note-to-natwd abstime me)) ;transform to note-abs
-        ((pause? me) "pause") ;get duration somehow
-        ((seq? me) "seq")  ;call recursively on all elements
-        ((par? me) "par")
-        ("maybe list?")))
-;call recursively on all elements
-
-
-;; should be in helper
-        ;((note? me) "note") ;transform to note-abs
-        ;((pause? me) "pause") ;ignore
-        ;((seq? me) "seq") ;call recursively on all elements
-        ;("par"))) ;call recursively on all elements
+  (cond ((eqv? me '()) '())
+        ((note? me) (list (note-to-natwd me abstime)))
+        ((pause? me) '())
+        ((or (seq? me) (par? me)) (transform-helper (get-els me) abstime))
+        ((if (seq? (head me)) (append (transform-helper (head me) 1) (transform-helper (tail me) (+ abstime (get-music-dur (head me)))))
+             (append (transform-helper (head me) abstime) (transform-helper (tail me) abstime))))))
 
 ;;; test
 (define n1 (note 1 2 3))
@@ -122,30 +114,25 @@
 (define par1 (par (list s1)))
 (define text "test")
 
+(define t1 (note-to-natwd n1 1))
+(define t2 (note-to-natwd n1 2))
+(define l1 (list t1 t1))
+;t1
+;l1
+(append l1 (list t2))
+
 (define testelement (seq (list (note 60 half piano) (pause half) (note 60 half piano))))
+;(define testelement (seq (list (note 60 half piano))))
 (define testseq (seq (list testelement (par (list testelement)) (pause 100) testelement)))
 
+"how it looks now"
 (transform-to-note-abs-time-with-duration testseq)
 
-;; music element
-;;   - Note (pitchvalue, duration, instrument)
-;;   - pause (duration)
-;;   - sequentialMusicElement (musicElements)
-;;   - parallelMusicElement (musicElements)
 
-;; pitchvalue: int between 0 and 127
-;; duration: timeunit where 960 is a second
-;; instruments: Piano, Organ, Guitar, Violin, Flute, Trumpet, Helicopter, Telephone
-
-;abs-time:	A non-negative integer, in time ticks. The absolute start time of the note.
-;channel:	An integer between 1 and 16. The MIDI channel allocated to the requested instrument. Se the miniproject formulation for more details.
-;note-number:	An integer between 0 and 127. The MIDI note number.
-;velocity:	An integer between 0 and 127. The velocity (strength) of the note. Not controllable in this exercise. It can be a constant, such as 80.
-;duration:	A non-negative integer. The duration of this note (a number of time ticks).
-
-
-
+"how it should look"
 ;(define notelist (list (note-abs-time-with-duration 0 1 60 80 1920) (note-abs-time-with-duration 1920 1 64 80 960) (note-abs-time-with-duration 2880 1 62 80 1920) (note-abs-time-with-duration 4800 1 64 80 960) (note-abs-time-with-duration 5760 1 60 80 1920) (note-abs-time-with-duration 7680 1 59 80 960) (note-abs-time-with-duration 8640 1 57 80 1920) (note-abs-time-with-duration 10560 1 60 80 960) (note-abs-time-with-duration 11520 1 64 80 1920) (note-abs-time-with-duration 13440 1 64 80 960) (note-abs-time-with-duration 14400 1 64 80 1920) (note-abs-time-with-duration 16320 1 60 80 960) (note-abs-time-with-duration 17280 1 57 80 3840)))
+(define notelist (list (note-abs-time-with-duration 0 1 60 80 1920) (note-abs-time-with-duration 1920 1 64 80 960) (note-abs-time-with-duration 2880 1 62 80 1920)))
+notelist
 ;(transform-to-midi-file-and-write-to-file! notelist "generated-music.mid")
 
 
@@ -189,4 +176,8 @@
                            (note 65 480 piano)
                            (note 60 480 piano)
                            (note 65 960 piano))))
+;my-melody
+(define mester-jakob (transform-to-note-abs-time-with-duration my-melody))
+;mester-jakob
+(transform-to-midi-file-and-write-to-file! mester-jakob "mester-jakob.mid")
 
