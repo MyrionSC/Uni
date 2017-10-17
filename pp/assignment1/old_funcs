@@ -1,5 +1,58 @@
 #lang racket
 
+
+;;; canon
+(define mester-jakob (seq (list
+                           (note 65 480 piano)
+                           (note 67 480 piano)
+                           (note 69 480 piano)
+                           (note 65 480 piano)
+                           (note 65 480 piano)
+                           (note 67 480 piano)
+                           (note 69 480 piano)
+                           (note 65 480 piano))))
+(define hvor-er-du (seq (list
+                         (note 69 480 piano)
+                         (note 70 480 piano)
+                         (note 72 960 piano)
+                         (note 69 480 piano)
+                         (note 70 480 piano)
+                         (note 72 960 piano))))
+(define ringer-du-med-klokken (seq (list
+                                    (note 72 240 piano)
+                                    (note 74 240 piano)
+                                    (note 72 240 piano)
+                                    (note 70 240 piano)
+                                    (note 69 480 piano)
+                                    (note 65 480 piano)
+                                    (note 72 240 piano)
+                                    (note 74 240 piano)
+                                    (note 72 240 piano)
+                                    (note 70 240 piano)
+                                    (note 69 480 piano)
+                                    (note 65 480 piano))))
+(define bim-bam-bum (seq (list
+                          (note 65 480 piano)
+                          (note 60 480 piano)
+                          (note 65 960 piano)
+                          (note 65 480 piano)
+                          (note 60 480 piano)
+                          (note 65 960 piano))))
+
+(define song (seq (list mester-jakob hvor-er-du ringer-du-med-klokken bim-bam-bum)))
+(define canon (seq (list
+                    mester-jakob
+                    (par (list song)) ;sætter en ny paralel "tråd" igang som spiller hele sangen
+                    hvor-er-du
+                    (par (list song))
+                    ringer-du-med-klokken
+                    (par (list song))
+                    bim-bam-bum)))
+
+(define abscanon (transform-to-note-abs-time-with-duration canon))
+(transform-to-midi-file-and-write-to-file! abscanon "mester-jakob.mid")
+
+
 ;; music element
 ;;   - Note (pitchvalue, duration, instrument)
 ;;   - pause (duration)
@@ -15,6 +68,49 @@
 ;note-number:	An integer between 0 and 127. The MIDI note number.
 ;velocity:	An integer between 0 and 127. The velocity (strength) of the note. Not controllable in this exercise. It can be a constant, such as 80.
 ;duration:	A non-negative integer. The duration of this note (a number of time ticks).
+
+;(define t1 (transform-to-note-abs-time-with-duration n1))
+;(append (list t1 t1) (list t1))
+;(append (transform-to-note-abs-time-with-duration p1) (transform-to-note-abs-time-with-duration n1))
+
+
+;(define testelement (seq (list (note 60 half piano) (pause half) (seq (list (par (list (note 60 half piano))) (note 60 half piano))))))
+;(define testelement (seq (list (note 60 half piano) (pause half) (note 60 half piano))))
+;(define testseq (seq (list testelement (par (list testelement)) (pause 100) testelement)))
+              [(eqv? type 'note)
+               (match props)
+               [(list pit dur ins)
+                (cond
+                  [(
+
+                ] ;list
+(or (! number? pit) (! (and (> pit 0) (< pit 127))))
+;"how it should look"
+;(define notelist (list (note-abs-time-with-duration 0 1 60 80 1920) (note-abs-time-with-duration 1920 1 64 80 960) (note-abs-time-with-duration 2880 1 62 80 1920) (note-abs-time-with-duration 4800 1 64 80 960) (note-abs-time-with-duration 5760 1 60 80 1920) (note-abs-time-with-duration 7680 1 59 80 960) (note-abs-time-with-duration 8640 1 57 80 1920) (note-abs-time-with-duration 10560 1 60 80 960) (note-abs-time-with-duration 11520 1 64 80 1920) (note-abs-time-with-duration 13440 1 64 80 960) (note-abs-time-with-duration 14400 1 64 80 1920) (note-abs-time-with-duration 16320 1 60 80 960) (note-abs-time-with-duration 17280 1 57 80 3840)))
+;(define notelist (list (note-abs-time-with-duration 0 1 60 80 1920) (note-abs-time-with-duration 1920 1 64 80 960) (note-abs-time-with-duration 2880 1 62 80 1920)))
+;notelist
+;(transform-to-midi-file-and-write-to-file! notelist "generated-music.mid")
+
+
+
+
+
+(define testelement (seq
+                     (list
+                      (note 60 half piano)
+                      (pause half)
+                      (seq
+                       (list
+                        (seq
+                         (list
+                          (note 60 half piano)
+                          )
+                         )
+                        (note 60 half piano)
+                        )
+                       )
+                      )
+                     ))
 
 (define (music-element-walk basecase notef pausef seqf parf listf)
   (lambda (me)

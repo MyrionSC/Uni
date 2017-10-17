@@ -1,5 +1,4 @@
 #lang racket
-
 (require "music-base.rkt")
 
 ;;; helper functions
@@ -15,6 +14,8 @@
   (display val)
   (newline)
   val)
+(define (valid-music-element-type type)
+  (or (eqv? type 'note) (or (eqv? type 'pause) (or (eqv? type 'seq) (eqv? type 'par)))))
 
 ;;; global variables
 (define piano 1)
@@ -36,17 +37,29 @@
 
 ;;; 1: create constructors for music elements
 
-;; create super element
+;; create super element with parameter validation
 (struct music-element (type els props)
-  #:transparant
+  #:transparent
   #:guard (lambda (type els props type-name)
-            (cond ((
-                      
-                    ;[(string? name) name]
-                    ;[(symbol? name) (symbol->string name)]
-                    ;[else (error type-name
-                    ;             "bad name: ~e"
-                    ;             name)])))
+            (cond
+              [(! (valid-music-element-type type)) (error type-name "bad type: ~e. Should be one of: 'note 'pause 'seq 'par" type)]
+              [(eqv? type 'note)
+               (match props
+                 [(list pit dur ins)
+                  (cond
+                    [(or (! (number? pit)) (! (and (> pit 0) (< pit 127)))) (error type-name "bad pitch. Should be number between 0 and 127 (inclusive)" type)]
+                    [(! (positive? dur)) (error type-name "bad duration. Should be positive number" type)]
+                    [(or (< ins 0) (> ins 16)) (error type-name "bad instrument. Should be number between 1 and 16 (inclusive)" type)]
+                    [else (values type els props)])])]
+              [(eqv? type 'pause)
+               (match props
+                 [(list dur)
+                  (cond
+                    [(! (positive? dur)) (error type-name "bad duration. Should be positive number" type)]
+                    [else (values type els props)])])]
+              ;[(or (eqv? type 'seq) eqv? type 'par) (if (! (list? els)) (error type-name "bad input. Should be list of music elements" type)
+              ;                      (values type els props))]
+              [else (values type els props)])))
 
 ;; create specific elements
 (define (note pit dur ins)
@@ -57,6 +70,7 @@
   (music-element 'seq els '()))
 (define (par els)
   (music-element 'par els '()))
+
 
 ;;; 2 - element predicates
 (define (music-element-pred? type)
@@ -82,21 +96,28 @@
   (if (or (seq? me) (par? me)) (music-element-els me)
       (raise "element not sequence or paralel music element")))
 
-
 ;;; 4: scale, transpose and reinstrument functions
+(define (scale me mult)
+  ;(display me)
+  ;(newline)
+    (cond ((eqv? me '()) '())
+          ((note? me) (list (note (get-note-pit me) (* (get-note-dur me) mult) (get-note-ins me))))
+          ((pause? me) (list (pause (* (get-pause-dur me) mult))))
+          ((seq? me) (seq (scale (get-els me) mult)))
+          ((par? me) (par (scale (get-els me) mult)))
+          ((or (seq? (head me)) (par (head me))) (append (list (scale (head me) mult)) (scale (tail me) mult)))
+          ((append (scale (head me) mult) (scale (tail me) mult)))))
+          ;((append (scale (head me) mult) (scale (tail me) mult)))))
 
 ;;; 5: duration of music element function
 (define (get-music-dur me)
-    (cond ((eqv? me '()) 0)
-          ((note? me) (get-note-dur me))
-          ((pause? me) (get-pause-dur me))
-          ((seq? me) (get-music-dur (get-els me)))
-          ((par? me) (get-music-dur (get-els me)))
-          ((if (par? (head me)) (max (get-music-dur (head me)) (get-music-dur (tail me)))
-               (+ (get-music-dur (head me)) (get-music-dur (tail me)))))))
+  (cond ((eqv? me '()) 0)
+        ((note? me) (get-note-dur me))
+        ((pause? me) (get-pause-dur me))
+        ((or (seq? me) (par? me)) (get-music-dur (get-els me)))
+        ((if (par? (head me)) (max (get-music-dur (head me)) (get-music-dur (tail me)))
+             (+ (get-music-dur (head me)) (get-music-dur (tail me)))))))
 ; drawback: if there is a long pause at the end of the song that is counted as well
-
-
 
 ;;; 6: is monophonic function
 
@@ -119,55 +140,27 @@
         ((if (par? (head me)) (append (transform-helper (head me) abstime) (transform-helper (tail me) abstime))
              (append (transform-helper (head me) abstime) (transform-helper (tail me) (+ abstime (get-music-dur (head me)))))))))
 
+;;; test
+(define n1 (note 1 2 3))
+(define p1 (pause 123))
+(define s1 (seq (list n1 p1)))
+(define par1 (par (list s1)))
+(define text "test")
 
+(define t1 (note-to-natwd n1 1))
+(define t2 (note-to-natwd n1 2))
 
-;;; canon
 (define mester-jakob (seq (list
-                           (note 65 480 piano)
                            (note 67 480 piano)
-                           (note 69 480 piano)
-                           (note 65 480 piano)
-                           (note 65 480 piano)
-                           (note 67 480 piano)
+                           (seq (list
+                                 (note 67 480 piano)
+                                 (note 67 480 piano)
+                                 (note 67 480 piano)))
                            (note 69 480 piano)
                            (note 65 480 piano))))
-(define hvor-er-du (seq (list
-                         (note 69 480 piano)
-                         (note 70 480 piano)
-                         (note 72 960 piano)
-                         (note 69 480 piano)
-                         (note 70 480 piano)
-                         (note 72 960 piano))))
-(define ringer-du-med-klokken (seq (list
-                                    (note 72 240 piano)
-                                    (note 74 240 piano)
-                                    (note 72 240 piano)
-                                    (note 70 240 piano)
-                                    (note 69 480 piano)
-                                    (note 65 480 piano)
-                                    (note 72 240 piano)
-                                    (note 74 240 piano)
-                                    (note 72 240 piano)
-                                    (note 70 240 piano)
-                                    (note 69 480 piano)
-                                    (note 65 480 piano))))
-(define bim-bam-bum (seq (list
-                          (note 65 480 piano)
-                          (note 60 480 piano)
-                          (note 65 960 piano)
-                          (note 65 480 piano)
-                          (note 60 480 piano)
-                          (note 65 960 piano))))
 
-(define song (seq (list mester-jakob hvor-er-du ringer-du-med-klokken bim-bam-bum)))
-(define canon (seq (list
-                    mester-jakob
-                    (par (list song))
-                    hvor-er-du
-                    (par (list song))
-                    ringer-du-med-klokken
-                    (par (list song))
-                    bim-bam-bum)))
-
-(define abscanon (transform-to-note-abs-time-with-duration canon))
+mester-jakob
+(define mester-jakob-scaled (scale mester-jakob 1))
+mester-jakob-scaled
+(define abscanon (transform-to-note-abs-time-with-duration mester-jakob-scaled))
 (transform-to-midi-file-and-write-to-file! abscanon "mester-jakob.mid")
