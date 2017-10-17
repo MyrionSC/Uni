@@ -75,12 +75,13 @@
 ;;; 5: duration of music element function
 (define (get-music-dur me)
     (cond ((eqv? me '()) 0)
-          ((note? me) (get-note-dur me)) ;transform to note-abs
-          ((pause? me) (get-pause-dur me)) ;get duration somehow
-          ((seq? me) (get-music-dur (get-els me))) ;call recursively on all elements
+          ((note? me) (get-note-dur me))
+          ((pause? me) (get-pause-dur me))
+          ((seq? me) (get-music-dur (get-els me)))
           ((par? me) (get-music-dur (get-els me)))
           ((if (par? (head me)) (max (get-music-dur (head me)) (get-music-dur (tail me)))
                (+ (get-music-dur (head me)) (get-music-dur (tail me)))))))
+; drawback: if there is a long pause at the end of the song that is counted as well
 
 
 
@@ -90,9 +91,13 @@
 
 ;;; 8: transform to list of note-abs-time-with-duration
 
-
+(define (pause-to-natwd abstime)
+  (display abstime)
+  (newline)
+  '())
 
 (define (note-to-natwd n abstime)
+  (display abstime) (newline)
   (note-abs-time-with-duration abstime (get-note-ins n) (get-note-pit n) 80 (get-note-dur n)))
 
 (define (transform-to-note-abs-time-with-duration me)
@@ -102,10 +107,12 @@
 (define (transform-helper me abstime)
   (cond ((eqv? me '()) '())
         ((note? me) (list (note-to-natwd me abstime)))
-        ((pause? me) '())
+        ((pause? me) (pause-to-natwd abstime))
         ((or (seq? me) (par? me)) (transform-helper (get-els me) abstime))
-        ((if (seq? (head me)) (append (transform-helper (head me) 1) (transform-helper (tail me) (+ abstime (get-music-dur (head me)))))
-             (append (transform-helper (head me) abstime) (transform-helper (tail me) abstime))))))
+        ((append (transform-helper (head me) abstime) (transform-helper (tail me) (+ abstime (get-music-dur (head me))))))))
+        
+        ;((if (seq? (head me)) (append (transform-helper (head me) abstime) (transform-helper (tail me) (+ abstime (get-music-dur (head me)))))
+             ;(append (transform-helper (head me) abstime) (transform-helper (tail me) abstime))))))
 
 ;;; test
 (define n1 (note 1 2 3))
@@ -122,11 +129,10 @@
 (append l1 (list t2))
 
 (define testelement (seq (list (note 60 half piano) (pause half) (note 60 half piano))))
-;(define testelement (seq (list (note 60 half piano))))
 (define testseq (seq (list testelement (par (list testelement)) (pause 100) testelement)))
 
 "how it looks now"
-(transform-to-note-abs-time-with-duration testseq)
+(transform-to-note-abs-time-with-duration testelement)
 
 
 "how it should look"
@@ -177,7 +183,7 @@ notelist
                            (note 60 480 piano)
                            (note 65 960 piano))))
 ;my-melody
-(define mester-jakob (transform-to-note-abs-time-with-duration my-melody))
+;(define mester-jakob (transform-to-note-abs-time-with-duration my-melody))
 ;mester-jakob
-(transform-to-midi-file-and-write-to-file! mester-jakob "mester-jakob.mid")
+;(transform-to-midi-file-and-write-to-file! mester-jakob "mester-jakob.mid")
 
