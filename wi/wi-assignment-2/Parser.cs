@@ -21,7 +21,7 @@ namespace wi_assignment_2
                 else if (line.StartsWith("friends:"))
                 {
                     string friends = line.Substring(8, line.Length - 8);
-                    string[] friendsList = friends.Split('\t');
+                    string[] friendsList = friends.Trim().Split('\t');
                     parsingUser.Friends = new HashSet<string>(friendsList);
                 }
                 else if (line.StartsWith("summary:"))

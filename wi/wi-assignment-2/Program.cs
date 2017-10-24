@@ -15,12 +15,16 @@ namespace wi_assignment_2
             Console.WriteLine();
             foreach (User user in users)
             {
-                if (user.Review != "*")
-                    Console.WriteLine(user.Summary);
+                foreach (string userFriend in user.Friends)
+                {
+                    Console.WriteLine(userFriend);
+                }
+                break;
             }
             
-
-
+            
+            
+            
         }
     }
     
