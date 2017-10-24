@@ -1,0 +1,10 @@
+/home/martin/code/uni/wi/wi-assignment-2/obj/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/home/martin/code/uni/wi/wi-assignment-2/bin/Debug/wi_assignment_2.pdb
+/home/martin/code/uni/wi/wi-assignment-2/bin/Debug/wi_assignment_2.exe
+/home/martin/code/uni/wi/wi-assignment-2/obj/Debug/wi_assignment_2.exe
+/home/martin/code/uni/wi/wi-assignment-2/obj/Debug/wi_assignment_2.pdb
+/home/martin/code/uni/wi/wi-assignment-2/bin/Debug/Accord.dll.config
+/home/martin/code/uni/wi/wi-assignment-2/bin/Debug/Accord.dll
+/home/martin/code/uni/wi/wi-assignment-2/bin/Debug/Accord.Math.dll
+/home/martin/code/uni/wi/wi-assignment-2/bin/Debug/Accord.Math.Core.dll
+/home/martin/code/uni/wi/wi-assignment-2/bin/Debug/MathNet.Numerics.dll
