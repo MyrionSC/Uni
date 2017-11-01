@@ -6,9 +6,9 @@ namespace wi_assignment_2
 {
     public class Parser
     {
-        public static HashSet<User> ParseUsers(string filepath)
+        public static List<User> ParseUsers(string filepath)
         {
-            HashSet<User> users = new HashSet<User>();
+            List<User> users = new List<User>();
             string[] friendship = File.ReadAllLines(filepath);
 
             User parsingUser = new User();

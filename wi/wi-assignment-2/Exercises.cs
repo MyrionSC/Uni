@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using MathNet.Numerics;
-using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Numerics.LinearAlgebra.Factorization;
 
@@ -45,10 +41,10 @@ namespace wi_assignment_2
             Console.WriteLine();
 
             Evd<double> m = laplacianMatrix.Evd();
-            Console.WriteLine(m.EigenValues);
+            Console.WriteLine();
 //            Console.WriteLine(m.D);
 //            Console.WriteLine(m.Determinant);
-            Console.WriteLine(m.EigenVectors);
+            Console.WriteLine(DenseVector.OfArray(m.EigenVectors.ToColumnArrays()[1]));
 //            Console.WriteLine(m.IsFullRank);
 //            Console.WriteLine(m.IsSymmetric);
 //            Console.WriteLine(m.Rank);
@@ -56,18 +52,18 @@ namespace wi_assignment_2
 
         public static void Exercise2()
         {
-            MutableKeyValuePair<string, double>[] wordsArray =
+            Utils.MutableKeyValuePair<string, double>[] wordsArray =
             {
-                new MutableKeyValuePair<string, double>("good", 0),
-                new MutableKeyValuePair<string, double>("I", 0),
-                new MutableKeyValuePair<string, double>("like", 0),
-                new MutableKeyValuePair<string, double>("this", 0),
-                new MutableKeyValuePair<string, double>("shit", 0),
-                new MutableKeyValuePair<string, double>("amazing", 0),
-                new MutableKeyValuePair<string, double>("awesome", 0),
-                new MutableKeyValuePair<string, double>("horrible", 0),
-                new MutableKeyValuePair<string, double>("is", 0),
-                new MutableKeyValuePair<string, double>("don't", 0)
+                new Utils.MutableKeyValuePair<string, double>("good", 0),
+                new Utils.MutableKeyValuePair<string, double>("I", 0),
+                new Utils.MutableKeyValuePair<string, double>("like", 0),
+                new Utils.MutableKeyValuePair<string, double>("this", 0),
+                new Utils.MutableKeyValuePair<string, double>("shit", 0),
+                new Utils.MutableKeyValuePair<string, double>("amazing", 0),
+                new Utils.MutableKeyValuePair<string, double>("awesome", 0),
+                new Utils.MutableKeyValuePair<string, double>("horrible", 0),
+                new Utils.MutableKeyValuePair<string, double>("is", 0),
+                new Utils.MutableKeyValuePair<string, double>("don't", 0)
             };
             Review[] reviews = 
             {
@@ -134,7 +130,7 @@ namespace wi_assignment_2
                 return Positive + ": " + Content;
             }
 
-            static public double probPos(string content, Review[] reviews, MutableKeyValuePair<string, double>[] words)
+            static public double probPos(string content, Review[] reviews, Utils.MutableKeyValuePair<string, double>[] words)
             {
                 // N = number of reviews
                 // P(Review|pos) = P(word1|pos)*P(word2|pos)*...*P(wordn|pos)*P(pos)
@@ -153,18 +149,6 @@ namespace wi_assignment_2
             }
         }
         
-        private class MutableKeyValuePair<KeyType, ValueType>
-        {
-            public KeyType Key { get; set; }
-            public ValueType Value { get; set; }
 
-            public MutableKeyValuePair() { }
-
-            public MutableKeyValuePair(KeyType key, ValueType val)
-            {
-                Key = key;
-                Value = val;
-            }
-        }
     }
 }
