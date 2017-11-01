@@ -9,18 +9,22 @@ namespace wi_assignment_2
     {
         public static void Main(string[] args)
         {
-            HashSet<User> users = Parser.ParseUsers("friendships.txt");
+            HashSet<User> users = Parser.ParseUsers("friendships.reviews.txt");
 
-            Console.WriteLine(users.Count);
-            Console.WriteLine();
-            foreach (User user in users)
-            {
-                foreach (string userFriend in user.Friends)
-                {
-                    Console.WriteLine(userFriend);
-                }
-                break;
-            }
+//            Console.WriteLine(users.Count);
+//            Console.WriteLine();
+//            foreach (User user in users)
+//            {
+//                if (user.Summary != "*")
+//                {
+//                    string str = user.Name + ": " + user.Summary;
+//                    Console.WriteLine(str);
+//                }
+//            }
+            
+            Exercises.Exercise2();
+            
+//            Exercise.exercise1();
             
             
             

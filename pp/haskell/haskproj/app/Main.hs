@@ -2,64 +2,38 @@ module Main where
 import Lib
 
 
---- Lecture 2
-
--- ex 1
-takeWhile' p [] = []
-takeWhile' p (x:xs) = if p x then x:takeWhile' p xs else takeWhile' p xs
-
-dropWhile' p [] = []
-dropWhile' p (x:xs) = if p x then dropWhile' p xs else x:dropWhile' p xs
+--- Lecture 3
 
 -- ex 2
--- t :: (Integer -> [Integer]) -> t
-factors n = [i | i <- [1..n], n `mod` i == 0]
+
+data RecType = RecInt | RecBool | Arrow RecType RecType | Prod RecType RecType deriving Show
 
 -- ex 3
 
-fibs = 1 : 2 : zipWith (+) fibs (tail fibs)
-fib n = fibs!!n
+type Var = String
+data Expr = X Var | C Const | Paren Expr Expr | Pair Expr Expr | If Expr Expr Expr |
+            Lambda Var Expr | Let Var Expr Expr
+data Const = Number | Plus | Equal | IsZero | True | False | Not | First | Second
 
--- ex4
+-- ex 4
 
-data N = Zero
-       | Succ N
-       deriving (Eq, Show)
+type Vari = String
 
--- ex 5
+data LambdaType = Produ LambdaType | FUnc LambdaType LambdaType | Bools | Ints deriving(Eq,Show)
 
-data Tree a = Leaf a | Node (Tree a) (Tree a) deriving (Show)
+type Tenv = Var -> Maybe LambdaType
 
-b = Leaf 2
-c = Node (Leaf 1) (Leaf 2)
-d = Node c c
-e = Node d d
+--tlookup [] x = Nothing
+--tlookup ((x,t) : tenv1) y | x == y = Just t
+--tlookup ((x,t) : tenv1) y | not (x == y) = tlookup tenv1 y
 
-leafNumber (Leaf x) = x
-leafNumber (Node l r) = leafNumber l + leafNumber r
+--remove [] x = []
+--remove (h:tenv) x = if y == x then tenv else h : (remove tenv x)
+--                        where (y,_) = h
 
-balancedTree (Leaf x) = True
-balancedTree (Node l r) = abs (leafNumber l - leafNumber r) < 1
-
-
--- ex 6
-
-halve xs = splitAt (div (length xs) 2) xs
-balance [x] = Leaf x
-balance xs = Node (balance ys) (balance zs)
-            where (ys,zs) = halve xs
-
-l1 = [1]
-l = [1,2,3,4,5,6,7,8,9,10,11]
-ls = splitAt (length l) l
-
--- t1 = Node (b)
-
-
-
--- balanced tree =
-
--- submission url: http://people.cs.aau.dk/~normark/cgi-bin/QA/form.cgi?event=PP-E17-6&group=8905791203230219750982332211&user-name=marand13
+-- tenvupdate tenv (x,t) = (x,t) : tenv1
+--                       where tenv1 = remove tenv x
+-- tenvupdate tenv (x,t) = \y -> if y == x then (Just t) else tenv y
 
 
 main = print "done"
