@@ -52,18 +52,18 @@ namespace wi_assignment_2
 
         public static void Exercise2()
         {
-            Utils.MutableKeyValuePair<string, double>[] wordsArray =
+            Utils.Pair<string, double>[] wordsArray =
             {
-                new Utils.MutableKeyValuePair<string, double>("good", 0),
-                new Utils.MutableKeyValuePair<string, double>("I", 0),
-                new Utils.MutableKeyValuePair<string, double>("like", 0),
-                new Utils.MutableKeyValuePair<string, double>("this", 0),
-                new Utils.MutableKeyValuePair<string, double>("shit", 0),
-                new Utils.MutableKeyValuePair<string, double>("amazing", 0),
-                new Utils.MutableKeyValuePair<string, double>("awesome", 0),
-                new Utils.MutableKeyValuePair<string, double>("horrible", 0),
-                new Utils.MutableKeyValuePair<string, double>("is", 0),
-                new Utils.MutableKeyValuePair<string, double>("don't", 0)
+                new Utils.Pair<string, double>("good", 0),
+                new Utils.Pair<string, double>("I", 0),
+                new Utils.Pair<string, double>("like", 0),
+                new Utils.Pair<string, double>("this", 0),
+                new Utils.Pair<string, double>("shit", 0),
+                new Utils.Pair<string, double>("amazing", 0),
+                new Utils.Pair<string, double>("awesome", 0),
+                new Utils.Pair<string, double>("horrible", 0),
+                new Utils.Pair<string, double>("is", 0),
+                new Utils.Pair<string, double>("don't", 0)
             };
             Review[] reviews = 
             {
@@ -97,7 +97,7 @@ namespace wi_assignment_2
                 for (int j = 0; j < reviews.Length; j++)
                 {
                     var review = reviews[j];
-                    if (review.Content.Contains(word.Key))
+                    if (review.Content.Contains(word.First))
                     {
                         containCount++;
                         if (review.Positive)
@@ -106,7 +106,7 @@ namespace wi_assignment_2
                         }
                     }
                 }
-                word.Value = posCount / containCount;
+                word.Second = posCount / containCount;
             }
             
             string content = "good amazing this is";
@@ -130,7 +130,7 @@ namespace wi_assignment_2
                 return Positive + ": " + Content;
             }
 
-            static public double probPos(string content, Review[] reviews, Utils.MutableKeyValuePair<string, double>[] words)
+            static public double probPos(string content, Review[] reviews, Utils.Pair<string, double>[] words)
             {
                 // N = number of reviews
                 // P(Review|pos) = P(word1|pos)*P(word2|pos)*...*P(wordn|pos)*P(pos)
@@ -138,7 +138,7 @@ namespace wi_assignment_2
                 double wordProbs = 1;
                 foreach (string s in content.Split(' '))
                 {
-                    wordProbs *= words.First(w => w.Key == s).Value + 1;
+                    wordProbs *= words.First(w => w.First == s).Second + 1;
                 }
 
                 double NPos = reviews.Count(r => r.Positive);

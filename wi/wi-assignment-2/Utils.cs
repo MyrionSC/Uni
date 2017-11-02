@@ -36,27 +36,37 @@ namespace wi_assignment_2
             return DenseMatrix.OfArray(userAdjArr);
         }
         
-        public class MutableKeyValuePair<KeyType, ValueType>
+        public class Pair<T1, T2>
         {
-            public KeyType Key { get; set; }
-            public ValueType Value { get; set; }
+            public T1 First { get; set; }
+            public T2 Second { get; set; }
 
-            public MutableKeyValuePair() { }
-
-            public MutableKeyValuePair(KeyType key, ValueType val)
+            public Pair() { }
+            public Pair(T1 key, T2 val)
             {
-                Key = key;
-                Value = val;
+                First = key;
+                Second = val;
             }
         }
         
-        public class UserEigenPairComparer : IComparer<MutableKeyValuePair<User, double>>
+        public class SecondPairComparer<T> : IComparer<Pair<T, double>>
         {
-            public int Compare(MutableKeyValuePair<User, double> x, MutableKeyValuePair<User, double> y)
+            public int Compare(Pair<T, double> x, Pair<T, double> y)
             {
-                if (x.Value > y.Value)
+                if (x.Second > y.Second)
                     return 1;
-                else if (x.Value < y.Value)
+                else if (x.Second < y.Second)
+                    return -1;
+                return 0;
+            }
+        }
+        public class FirstPairComparer<T> : IComparer<Pair<int, T>>
+        {
+            public int Compare(Pair<int, T> x, Pair<int, T> y)
+            {
+                if (x.First > y.First)
+                    return 1;
+                else if (x.First < y.First)
                     return -1;
                 return 0;
             }

@@ -14,7 +14,10 @@ namespace wi_assignment_2
         {
             DateTime startTime = DateTime.Now;
 //            List<User> users = Parser.ParseUsers("friendships.reviews.txt");
-            List<User> users = new List<User>()
+
+            int numCuts = 2;
+            
+            List<User> users = new List<User>
             {
                 new User("per", new HashSet<string>(){"asger", "mads"},null,null),
                 new User("asger", new HashSet<string>(){"per", "mads"},null,null),
@@ -26,7 +29,6 @@ namespace wi_assignment_2
                 new User("simon", new HashSet<string>(){"søren", "katja", "morten"},null,null),
                 new User("morten", new HashSet<string>(){"simon"},null,null),
             };
-            
             
             Console.WriteLine("number of users: " + users.Count);
             
@@ -41,44 +43,51 @@ namespace wi_assignment_2
             DenseVector secondEigenvector = DenseVector.OfArray(m.EigenVectors.ToColumnArrays()[1]);
 
             // associate users and eigenvector values
-            List<Utils.MutableKeyValuePair<User, double>> usersEigenPairs = new List<Utils.MutableKeyValuePair<User, double>>();
+            List<Utils.Pair<User, double>> usersEigenPairs = new List<Utils.Pair<User, double>>();
             for (int i = 0; i < users.Count; i++)
             {
-                usersEigenPairs.Add(new Utils.MutableKeyValuePair<User, double>(users[i], secondEigenvector[i]));
+                usersEigenPairs.Add(new Utils.Pair<User, double>(users[i], secondEigenvector[i]));
             }
             
             // order nodes according to eigenvector value
-            usersEigenPairs.Sort(new Utils.UserEigenPairComparer());
+            usersEigenPairs.Sort(new Utils.SecondPairComparer<User>());
             
-            // calculate cut at the largest gap // todo perform more cuts at the same time
-            int largestGapIndex = 0;
-            double largestGap = 0;
+            // List gaps with indexes and sort them by gap size so the largest gaps are in the top
+            List<Utils.Pair<int, double>> gapIndexPairs = new List<Utils.Pair<int, double>>();
             for (int i = 0; i < usersEigenPairs.Count - 1; i++)
             {
-                double gap = Math.Abs(usersEigenPairs[i].Value - usersEigenPairs[i + 1].Value);
-                if (gap > largestGap)
-                {
-                    largestGap = gap;
-                    largestGapIndex = i;
-                }
+                gapIndexPairs.Add(new Utils.Pair<int, double>(i + 1,
+                    Math.Abs(usersEigenPairs[i].Second - usersEigenPairs[i + 1].Second)));
             }
+            gapIndexPairs.Sort(new Utils.SecondPairComparer<int>());
+            gapIndexPairs.Reverse();
+            
+            // get numCuts indexes to cut at and sort
+            List<int> IndexesToCut = gapIndexPairs.GetRange(0, numCuts).Select(p => p.First).OrderBy(i => i).ToList();
+            List<List<User>> communities = new List<List<User>>();
+            int indexProgress = 0;
+            foreach (int index in IndexesToCut)
+            {
+                communities.Add(usersEigenPairs.GetRange(indexProgress, index - indexProgress).Select(p => p.First).ToList());
+                indexProgress = index;
+            }
+            communities.Add(usersEigenPairs.GetRange(indexProgress, usersEigenPairs.Count - indexProgress).Select(p => p.First).ToList());
+            
+            int to = 2;
+            
+            
             
             // perform cut and create communities
-            var leftCut = usersEigenPairs.GetRange(0, largestGapIndex + 1);
-            var rightCut = usersEigenPairs.GetRange(largestGapIndex + 1, usersEigenPairs.Count - largestGapIndex - 1);
+//            var leftCut = usersEigenPairs.GetRange(0, largestGapIndex + 1);
+//            var rightCut = usersEigenPairs.GetRange(largestGapIndex + 1, usersEigenPairs.Count - largestGapIndex - 1);
             
             // todo convert pairs to Users
 //            List<List<User>> communities = 
             
+            // 
             
-            
-            
-            
-            
-            
-
-            Console.WriteLine(largestGap);
-            Console.WriteLine(largestGapIndex);
+//            Console.WriteLine(largestGap);
+//            Console.WriteLine(largestGapIndex);
 
 
 
