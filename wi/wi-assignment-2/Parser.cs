@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace wi_assignment_2
 {
@@ -40,6 +41,30 @@ namespace wi_assignment_2
             }
 
             return users;
+        }
+
+        public static List<List<User>> ParseCommunitites(List<User> users, int cut)
+        {
+            List<List<User>> communitites = new List<List<User>>();
+            string[] communitiesStrings = File.ReadAllLines("./communities/" + cut + "cut");
+            foreach (string namesInCommunity in communitiesStrings)
+            {
+                List<User> community = new List<User>();
+                foreach (string name in namesInCommunity.Split(' '))
+                {
+                    User user = users.FirstOrDefault(u => u.Name == name);
+                    if (user != null)
+                    {
+                        community.Add(user);
+                    }
+//                    else
+//                    {
+//                        Console.WriteLine("user " + name + " fell through the cracks in the system");
+//                    }
+                }
+                communitites.Add(community);
+            }
+            return communitites;
         }
     }
 }

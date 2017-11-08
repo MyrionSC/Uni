@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using MathNet.Numerics.LinearAlgebra.Double;
 
 namespace wi_assignment_2
@@ -46,6 +47,17 @@ namespace wi_assignment_2
             {
                 First = key;
                 Second = val;
+            }
+        }
+        
+        
+        public static void PrintCommunities(List<List<User>> communities)
+        {
+            Console.WriteLine();
+            for (int i = 0; i < communities.Count; i++)
+            {
+                List<User> c = communities[i];
+                Console.WriteLine("community " + (i + 1) + " count: " + c.Count);
             }
         }
         

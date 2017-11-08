@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Numerics.LinearAlgebra.Factorization;
 
@@ -13,22 +14,41 @@ namespace wi_assignment_2
         public static void Main(string[] args)
         {
             DateTime startTime = DateTime.Now;
-//            List<User> users = Parser.ParseUsers("friendships.reviews.txt");
-
-            int numCuts = 2;
             
-            List<User> users = new List<User>
-            {
-                new User("per", new HashSet<string>(){"asger", "mads"},null,null),
-                new User("asger", new HashSet<string>(){"per", "mads"},null,null),
-                new User("mads", new HashSet<string>(){"per", "asger", "anne", "marie"},null,null),
-                new User("anne", new HashSet<string>(){"mads", "marie", "søren", "katja"},null,null),
-                new User("marie", new HashSet<string>(){"mads", "anne", "søren", "katja"},null,null),
-                new User("søren", new HashSet<string>(){"anne", "marie", "katja", "simon"},null,null),
-                new User("katja", new HashSet<string>(){"anne", "marie", "søren", "simon"},null,null),
-                new User("simon", new HashSet<string>(){"søren", "katja", "morten"},null,null),
-                new User("morten", new HashSet<string>(){"simon"},null,null),
-            };
+            List<User> users = Parser.ParseUsers("friendships.reviews.txt");
+            // With the current spectral cut algorithm, it only makes sense to cut twice. The rest of the cuts only a few people are shaven of a community each cut
+            List<List<User>> communities = Parser.ParseCommunitites(users, 2);
+
+            
+            
+            Console.WriteLine();
+            Console.WriteLine("-------------------------------");
+            Console.WriteLine("Execution time: " + (DateTime.Now - startTime));
+        }
+
+        
+        
+        
+        
+        
+        
+        
+        public static void PerformCuts()
+        {
+            List<User> users = Parser.ParseUsers("friendships.reviews.txt");
+
+//            List<User> users = new List<User>
+//            {
+//                new User("per", new HashSet<string>(){"asger", "mads"},null,null),
+//                new User("asger", new HashSet<string>(){"per", "mads"},null,null),
+//                new User("mads", new HashSet<string>(){"per", "asger", "anne", "marie"},null,null),
+//                new User("anne", new HashSet<string>(){"mads", "marie", "søren", "katja"},null,null),
+//                new User("marie", new HashSet<string>(){"mads", "anne", "søren", "katja"},null,null),
+//                new User("søren", new HashSet<string>(){"anne", "marie", "katja", "simon"},null,null),
+//                new User("katja", new HashSet<string>(){"anne", "marie", "søren", "simon"},null,null),
+//                new User("simon", new HashSet<string>(){"søren", "katja", "morten"},null,null),
+//                new User("morten", new HashSet<string>(){"simon"},null,null),
+//            };
             
             Console.WriteLine("number of users: " + users.Count);
             
@@ -61,45 +81,36 @@ namespace wi_assignment_2
             }
             gapIndexPairs.Sort(new Utils.SecondPairComparer<int>());
             gapIndexPairs.Reverse();
-            
-            // get numCuts indexes to cut at and sort
-            List<int> IndexesToCut = gapIndexPairs.GetRange(0, numCuts).Select(p => p.First).OrderBy(i => i).ToList();
-            List<List<User>> communities = new List<List<User>>();
-            int indexProgress = 0;
-            foreach (int index in IndexesToCut)
+
+            // cut a untill we have communities of length 2 to 10
+            for (int numCuts = 1; numCuts < 10; numCuts++)
             {
-                communities.Add(usersEigenPairs.GetRange(indexProgress, index - indexProgress).Select(p => p.First).ToList());
-                indexProgress = index;
+                // get numCuts indexes to cut at and sort
+                List<int> IndexesToCut = gapIndexPairs.GetRange(0, numCuts).Select(p => p.First).OrderBy(i => i).ToList();
+                List<List<User>> communities = new List<List<User>>();
+                int indexProgress = 0;
+                foreach (int index in IndexesToCut)
+                {
+                    communities.Add(usersEigenPairs.GetRange(indexProgress, index - indexProgress).Select(p => p.First).ToList());
+                    indexProgress = index;
+                }
+                communities.Add(usersEigenPairs.GetRange(indexProgress, usersEigenPairs.Count - indexProgress).Select(p => p.First).ToList());
+            
+                // write communities to file
+                string[] communityStrings = new string[numCuts + 1];
+                for (int i = 0; i < communities.Count; i++)
+                {
+                    string namesInCommunity = "";
+                    List<User> community = communities[i];
+                    var arr = community.Select(u => u.Name).ToArray();
+                    foreach (string name in arr)
+                    {
+                        namesInCommunity += name + " ";
+                    }
+                    communityStrings[i] = namesInCommunity.TrimEnd();
+                }
+                File.WriteAllLines("./communities/" + numCuts.ToString() +  "cut", communityStrings);
             }
-            communities.Add(usersEigenPairs.GetRange(indexProgress, usersEigenPairs.Count - indexProgress).Select(p => p.First).ToList());
-            
-            int to = 2;
-            
-            
-            
-            // perform cut and create communities
-//            var leftCut = usersEigenPairs.GetRange(0, largestGapIndex + 1);
-//            var rightCut = usersEigenPairs.GetRange(largestGapIndex + 1, usersEigenPairs.Count - largestGapIndex - 1);
-            
-            // todo convert pairs to Users
-//            List<List<User>> communities = 
-            
-            // 
-            
-//            Console.WriteLine(largestGap);
-//            Console.WriteLine(largestGapIndex);
-
-
-
-
-//            Exercises.Exercise1();
-//            Console.WriteLine(m.EigenValues);
-
-            
-            
-            Console.WriteLine();
-            Console.WriteLine("-------------------------------");
-            Console.WriteLine("Execution time: " + (DateTime.Now - startTime));
         }
     }
 }
