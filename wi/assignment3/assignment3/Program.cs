@@ -7,6 +7,8 @@ namespace assignment3
 {
     internal class Program
     {
+        private static int[,] userMatrix;
+        
         public static void Main(string[] args)
         {
             List<Rating> trainingRatings = Parser.ParseRatings("data/u1.base");
@@ -15,7 +17,7 @@ namespace assignment3
             // create user-item rating matrix
             int usersCount = trainingRatings.Select(r => r.userId).ToArray().Max() + 1;
             int itemsCount = trainingRatings.Select(r => r.itemId).ToArray().Max() + 1;
-            int[,] userMatrix = new int[usersCount, itemsCount];
+            userMatrix = new int[usersCount, itemsCount];
             trainingRatings.ForEach(r =>
             {
                 userMatrix[r.userId, r.itemId] = r.rating;
@@ -25,25 +27,51 @@ namespace assignment3
             // 2: Find nearest neighbors to user
             // 3: combine ratings of neighbors to predict ratings
 
-            userSimilarity(2, 3, userMatrix);
+            Console.WriteLine(userSimilarity(1, 13));
 
-            Console.WriteLine(averageRating(3, userMatrix));
-
+//            double curmax = 0;
+//            int mostSim = 0;
+//            for (int i = 1; i < 50; i++)
+//            {
+//                if (i == 1) continue;
+//                
+//                var sim = userSimilarity(1, i);
+//                Console.WriteLine(i + ": " + sim);
+//                if (curmax < sim)
+//                {
+//                    curmax = sim;
+//                    mostSim = i;
+//                }
+//            }
+//            Console.WriteLine();
+//            Console.WriteLine(curmax);
+//            Console.WriteLine(mostSim);
+            
         }
 
-        public static double userSimilarity(int userA, int userB, int[,] userMatrix)
+        public static double userSimilarity(int userA, int userB) // pearson correlation
         {
-            var aItems = userRatedItems(userA, userMatrix);
-            var bItems = userRatedItems(userB, userMatrix);
-            var Union = aItems.Union(bItems);
-            var Intersect = aItems.Intersect(bItems);
+            var aItems = userRatedItems(userA);
+            var bItems = userRatedItems(userB);
+            var intersect = aItems.Intersect(bItems);
+            var aAverage = averageRating(userA);
+            var bAverage = averageRating(userB);
 
-            return userA;
+            double top = 0, bottomLeft = 0, bottomRight = 0;
+            foreach (int item in intersect)
+            {
+                top += (userRatingForItem(userA, item) - aAverage) * (userRatingForItem(userB, item) - bAverage);
+                bottomLeft += Math.Pow(userRatingForItem(userA, item), 2);
+                bottomRight += Math.Pow(userRatingForItem(userB, item), 2);
+            }
+            double bottom = Math.Log(bottomLeft) * Math.Log(bottomRight);
+            var ret = top / bottom;
+            return ret;
         }
         
         
         
-        public static double averageRating(int user, int[,] userMatrix)
+        public static double averageRating(int user)
         {
             double ratingSum = 0;
             double ratingCount = 0;
@@ -51,14 +79,14 @@ namespace assignment3
             {
                 if (userMatrix[user, i] != 0)
                 {
-                    ratingSum += userRatingForItem(user, i, userMatrix);
+                    ratingSum += userRatingForItem(user, i);
                     ratingCount++;
                 }
             }
             return ratingSum / ratingCount;
         }
 
-        public static HashSet<int> userRatedItems(int user, int[,] userMatrix)
+        public static HashSet<int> userRatedItems(int user)
         {
             HashSet<int> items = new HashSet<int>();
             for (int i = 0; i < userMatrix.GetLength(1); i++)
@@ -71,7 +99,7 @@ namespace assignment3
             return items;
         }
         
-        public static int userRatingForItem(int user, int item, int[,] userMatrix)
+        public static int userRatingForItem(int user, int item)
         {
             return userMatrix[user, item];
         }
