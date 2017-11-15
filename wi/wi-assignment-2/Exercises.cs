@@ -135,20 +135,21 @@ namespace wi_assignment_2
                 // N = number of reviews
                 // P(Review|pos) = P(word1|pos)*P(word2|pos)*...*P(wordn|pos)*P(pos)
                 // P(pos) = N(pos) / N
+                
                 double wordProbs = 1;
                 foreach (string s in content.Split(' '))
                 {
-                    wordProbs *= words.First(w => w.First == s).Second + 1;
+                    var prob = words.First(w => w.First == s).Second;
+                    wordProbs *= prob;
                 }
 
                 double NPos = reviews.Count(r => r.Positive);
                 double N = reviews.Length;
-                wordProbs = wordProbs * (NPos / N);
+                double PofPos = NPos / N;
+                wordProbs = wordProbs * PofPos;
 
                 return wordProbs;
             }
         }
-        
-
     }
 }

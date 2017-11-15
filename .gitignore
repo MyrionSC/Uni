@@ -24,6 +24,6 @@ cabal.project.local
 .idea/
 
 SentimentTrainingData.txt
-
+SentimentTestingData.txt
 
 
