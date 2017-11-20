@@ -1,0 +1,2 @@
+# should evaluate to 4x^3 - cos x
+d/dx(x^4 + d/dx(cos x))
