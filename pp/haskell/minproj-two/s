@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-./b && /home/martin/code/uni/pp/haskell/minproj-two/.stack-work/install/x86_64-linux-nopie/lts-9.14/8.0.2/bin/minproj-two
+/home/martin/code/uni/pp/haskell/minproj-two/.stack-work/install/x86_64-linux-nopie/lts-9.14/8.0.2/bin/minproj-two
