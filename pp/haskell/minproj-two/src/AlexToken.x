@@ -1,7 +1,6 @@
 {
 {-# OPTIONS_GHC -w #-}
 module AlexToken (Token(..),scanTokens) where
-import Expr
 }
 
 %wrapper "basic"
