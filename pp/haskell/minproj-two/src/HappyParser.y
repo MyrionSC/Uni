@@ -35,8 +35,8 @@ Expr : Expr '+' Expr               { Add $1 $3 }
      | Expr '/' Expr               { Div $1 $3 }
      | Expr '^' NUM                { ExprPow $1 $3 }
      | '%' Expr                    { Diff $2 }
-     | sin Expr                    { Sin $2 }
-     | cos Expr                    { Cos $2 }
+     | sin '(' Expr ')'            { Sin $3 }
+     | cos '(' Expr ')'            { Cos $3 }
      | Pol                         { Poly $1 }
 
 Pol  : '(' Expr ')'                { Parents $2 }
