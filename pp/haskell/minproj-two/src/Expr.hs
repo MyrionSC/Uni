@@ -9,16 +9,13 @@ type Pow = Int
 
 
 --reduce function. Takes an expression (which is in tree form) and reduces recursively untill no changes are happening anymore
---reduce :: expr -> Expr
+reduce :: Expr -> Expr
 
 -- reduction cases
 reduce (Mult (Poly (PolPow var1 ex1)) (Poly (PolPow var2 ex2))) = Poly (PolPow var1 (ex1 + ex2))
 reduce (Div (Poly (PolPow var1 ex1)) (Poly (PolPow var2 ex2))) = Poly (PolPow var1 (ex1 - ex2))
 reduce (Add (ExprPow (Sin (Poly (Var "x"))) 2) (ExprPow (Cos (Poly (Var "x"))) 2)) = Poly (Con 1)
-
--- Poly (PolScale 2 (Parents (Mult (Poly (PolPow "x" 2)) (Poly (PolPow "x" 2)))))
--- Poly (PolScale 2 (Parents (Mult (Poly (PolPow "x" 2)) (Poly (PolPow "x" 2)))))
-
+reduce (Add (Poly (Var e1)) (Poly (Var e2))) = Add (Poly (Var e2)) (Poly (Var e1))
 
 -- general cases
 reduce (Add e1 e2) = Add (reduce e1) (reduce e2)
@@ -29,18 +26,10 @@ reduce (ExprPow e1 pow) = ExprPow (reduce e1) pow
 reduce (Sin e) = Sin (reduce e)
 reduce (Cos e) = Cos (reduce e)
 
--- Polynomial cases
+-- Polynomial cases -- only PolScale and Parents can result in a reduction, the rest of the time we just return the polynomial
 reduce (Poly (PolScale c (Parents e))) = reduce e
 reduce (Poly (Parents e)) = reduce e
 reduce (Poly pol) = Poly pol
-
--- Polynomials
---reduce (Poly (PolScale c pol)) =
---reduce (Poly (Var x)) = Poly (Var x)
---reduce (Poly (Var x)) = Poly (Var x)
---reduce (Cos e) = Cos (Poly (Var x))
---reduce (Sin (Poly (Var x))) = Cos (Poly (Var x))
-
 
 -- Add (ExprPow (Sin (Poly (Var "x"))) 2) (ExprPow (Cos (Poly (Var "x"))) 2)
 
