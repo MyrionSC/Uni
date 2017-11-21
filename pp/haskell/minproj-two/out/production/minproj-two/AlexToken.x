@@ -20,6 +20,7 @@ tokens :-
   [\*]                          { \s -> TokenMul }
   [\\]                          { \s -> TokenDiv }
   [\^]                          { \s -> TokenPow }
+  [\%]                          { \s -> TokenDiff }
 
 {
 
@@ -29,6 +30,7 @@ data Token = TokenNum Int
            | TokenMul
            | TokenDiv
            | TokenPow
+           | TokenDiff
              deriving (Eq,Show)
 
 scanTokens = alexScanTokens
