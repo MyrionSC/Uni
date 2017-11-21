@@ -36,7 +36,6 @@ Expr : Expr '+' Expr               { Add $1 $3 }
      | cos Expr                    { Cos $2 }
      | Pol                         { Poly $1 }
 
-
 Pol  : '(' Expr ')'                { Parents $2 }
      | VAR '^' NUM                 { PolPow $1 $3 }
      | NUM '*' Pol                 { PolScale $1 $3 }

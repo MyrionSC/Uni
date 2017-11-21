@@ -11,7 +11,6 @@ import Expr
 
 %token
     NUM   { TokenNum $$ }
-    RAT   { TokenRat $$ }
     VAR   { TokenSym $$ }
     '+'   { TokenAdd }
     '*'   { TokenMul }
@@ -20,6 +19,8 @@ import Expr
     '%'   { TokenDiff }
     sin   { TokenSin }
     cos   { TokenCos }
+    '('   { TokenLParen }
+    ')'   { TokenRParen }
 
 %left '+'
 %left '*'
@@ -29,17 +30,18 @@ import Expr
 Expr : Expr '+' Expr               { Add $1 $3 }
      | Expr '*' Expr               { Mult $1 $3 }
      | Expr '/' Expr               { Div $1 $3 }
+     | Expr '^' NUM                { ExprPow $1 $3 }
      | '%' Expr                    { Diff $2 }
      | sin Expr                    { Sin $2 }
      | cos Expr                    { Cos $2 }
      | Pol                         { Poly $1 }
 
-
-Pol  : VAR '^' NUM                 { PolPow $1 $3 }
-     | RAT '*' Pol                 { PolScale $1 $3 }
-     | Var                         { $1 }
-
-Var  : VAR                         { Var $1 }
+Pol  : '(' Expr ')'                { Parents $2 }
+     | VAR '^' NUM                 { PolPow $1 $3 }
+     | NUM '*' Pol                 { PolScale $1 $3 }
+     | Pol '*' NUM                 { PolScale $3 $1 }
+     | Pol '+' Pol                 { PolAdd $1 $3 }
+     | VAR                         { Var $1 }
 
 {
 parseError :: [Token] -> a

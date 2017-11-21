@@ -1,5 +1,15 @@
 module Expr where
 
+data Expr = Poly Pol | Add Expr Expr | Mult Expr Expr | Div Expr Expr | Diff Expr | ExprPow Expr Pow | Sin Expr | Cos Expr deriving (Show, Eq)
+data Pol = Var Id | PolScale Const Pol | PolAdd Pol Pol | PolPow Id Pow | Parents Expr deriving (Show, Eq)
+
+type Id = String
+type Const = Int
+type Pow = Int
+
+source :: Expr -> String
+source expr = "Not Implemented"
+
 --type Id = String
 --data Op = Add | Sub | Mul deriving (Eq,Show)
 --data Expr = Abs Id Expr
@@ -11,15 +21,7 @@ module Expr where
 
 --data Expr = Poly Pol | Add Expr Expr | Mult Expr Expr | Div Expr Expr | Diff Id Expr | Sin Expr | Cos Expr deriving (Show, Eq)
 --data Pol = Var Id | PolScale Const Pol | PolAdd Pol Pol | PolPow Id Pow deriving (Show, Eq)
-data Expr = Poly Pol | Add Expr Expr | Mult Expr Expr | Div Expr Expr | Diff Expr | Sin Expr | Cos Expr deriving (Show, Eq)
-data Pol = Var Id | PolScale Const Pol | PolPow Id Int deriving (Show, Eq)
 
-type Id = String
-type Const = Rational
-type Pow = Int
-
-source :: Expr -> String
-source expr = "Not Implemented"
 --source expr = case expr of
 --  (Abs x e) -> parens $ "\\" ++ x ++ " -> " ++ source e
 --  (App e1 e2) -> parens $ source e1 ++ " " ++ source e2

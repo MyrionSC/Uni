@@ -17,13 +17,14 @@ tokens :-
   sin                           { \s -> TokenSin }
   cos                           { \s -> TokenCos }
   $digit+                       { \s -> TokenNum (read s) }
-  $digit+\.digit+               { \s -> TokenRat (read s) }
-  $alpha+                       { \s -> TokenSym s }
+  $alpha [$alpha $digit]*       { \s -> TokenSym s }
   [\+]                          { \s -> TokenAdd }
   [\*]                          { \s -> TokenMul }
-  [\\]                          { \s -> TokenDiv }
+  [\/]                          { \s -> TokenDiv }
   [\^]                          { \s -> TokenPow }
   [\%]                          { \s -> TokenDiff }
+  \(                            { \s -> TokenLParen }
+  \)                            { \s -> TokenRParen }
 
 {
 
@@ -37,6 +38,8 @@ data Token = TokenSin
            | TokenDiv
            | TokenPow
            | TokenDiff
+           | TokenLParen
+           | TokenRParen
              deriving (Eq,Show)
 
 scanTokens = alexScanTokens
