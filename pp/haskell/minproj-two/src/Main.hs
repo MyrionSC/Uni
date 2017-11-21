@@ -1,21 +1,7 @@
 module Main where
 
 import qualified HappyParser
-import Eval
 import Expr
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 runEvalWith :: (String -> Expr) -> String -> IO ()
 runEvalWith parseExpr input = do
