@@ -1,17 +1,28 @@
 module Main where
 
-import qualified HappyParser
+import HappyParser
 import Expr
 
-runEvalWith :: (String -> Expr) -> String -> IO ()
-runEvalWith parseExpr input = do
-  let ast = parseExpr input
-  putStrLn $ "AST: " ++ (show ast)
+getFirst :: [[String]] -> [String]
+getFirst (x:xs) = x
+getSecond (x:xs) = getFirst xs
+
+solve :: Expr -> IO ()
+solve ast = do
+  putStrLn $ "In: " ++ printExpr ast
+  let reduced = reduce ast
+  putStrLn $ "Reduced: " ++ printExpr reduced
   putStrLn ""
-  main
+  if (ast == reduced)
+    then putStrLn "sdf"
+    else putStrLn "oiuou"
+
+
 
 main :: IO ()
 main = do
   putStrLn "Input:"
-  input <- getLine
-  runEvalWith HappyParser.parseExpr input
+  input <- getContents
+  putStrLn input
+  let ast = parseExpr input
+  solve ast

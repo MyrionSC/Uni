@@ -7,8 +7,46 @@ type Id = String
 type Const = Int
 type Pow = Int
 
-source :: Expr -> String
-source expr = "Not Implemented"
+
+
+
+
+reduce (Mult (Poly (PolPow var1 ex1)) (Poly (PolPow var2 ex2))) = Poly (PolPow var1 (ex1 + ex2))
+reduce (Div (Poly (PolPow var1 ex1)) (Poly (PolPow var2 ex2))) = Poly (PolPow var1 (ex1 - ex2))
+
+
+
+
+
+
+
+
+
+
+
+-- Polynomials
+reduce (Poly pol) = Poly pol
+--reduce (Poly (PolScale c pol)) =
+--reduce (Poly (Var x)) = Poly (Var x)
+--reduce (Poly (Var x)) = Poly (Var x)
+--reduce (Cos e) = Cos (Poly (Var x))
+--reduce (Sin (Poly (Var x))) = Cos (Poly (Var x))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+printExpr expr = show expr
 
 --type Id = String
 --data Op = Add | Sub | Mul deriving (Eq,Show)
@@ -18,9 +56,6 @@ source expr = "Not Implemented"
 --          | Num Int
 --          | Binop Op Expr Expr
 --          deriving (Eq,Show)
-
---data Expr = Poly Pol | Add Expr Expr | Mult Expr Expr | Div Expr Expr | Diff Id Expr | Sin Expr | Cos Expr deriving (Show, Eq)
---data Pol = Var Id | PolScale Const Pol | PolAdd Pol Pol | PolPow Id Pow deriving (Show, Eq)
 
 --source expr = case expr of
 --  (Abs x e) -> parens $ "\\" ++ x ++ " -> " ++ source e
