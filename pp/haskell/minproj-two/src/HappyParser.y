@@ -10,38 +10,27 @@ import Expr
 %error { parseError }
 
 %token
-    let   { TokenLet }
-    in    { TokenIn }
     NUM   { TokenNum $$ }
     VAR   { TokenSym $$ }
-    '\\'  { TokenLambda }
-    '->'  { TokenArrow }
-    '='   { TokenEq }
     '+'   { TokenAdd }
-    '-'   { TokenSub }
     '*'   { TokenMul }
-    '('   { TokenLParen }
-    ')'   { TokenRParen }
+    '/'   { TokenDiv }
+    '^'   { TokenPow }
 
-%left '+' '-'
+%left '+'
 %left '*'
 %%
 
-Expr : let VAR '=' Expr in Expr    { App (Abs $2 $6) $4 }
-     | '\\' VAR '->' Expr          { Abs $2 $4 }
-     | Form                        { $1 }
+Expr : Expr '+' Expr               { Add $1 $3 }
+     | Expr '*' Expr               { Mult $1 $3 }
+     | Expr '/' Expr               { Div $1 $3 }
+     | Pol                         { Poly $1 }
 
-Form : Form '+' Form               { Binop Add $1 $3 }
-     | Form '-' Form               { Binop Sub $1 $3 }
-     | Form '*' Form               { Binop Mul $1 $3 }
-     | Juxt                        { $1 }
 
-Juxt : Juxt Atom                   { App $1 $2 }
-     | Atom                        { $1 }
+Pol  : VAR '^' NUM                 { PolPow $1 $3 }
+     | Var                         { $1 }
 
-Atom : '(' Expr ')'                { $2 }
-     | NUM                         { Num $1 }
-     | VAR                         { Var $1 }
+Var  : VAR                         { Var $1 }
 
 {
 parseError :: [Token] -> a

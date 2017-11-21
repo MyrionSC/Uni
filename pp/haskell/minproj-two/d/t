@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+./s < lambda-tests/ex1 && ./s < lambda-tests/ex2

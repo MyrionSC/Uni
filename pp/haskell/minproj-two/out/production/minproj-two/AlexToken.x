@@ -1,7 +1,6 @@
 {
 {-# OPTIONS_GHC -w #-}
 module AlexToken (Token(..),scanTokens) where
-import Expr
 }
 
 %wrapper "basic"
@@ -14,34 +13,23 @@ tokens :-
 
   $eol                          ;
   $white+                       ;
-  let                           { \s -> TokenLet }
-  in                            { \s -> TokenIn }
+  "#".*                         ;
   $digit+                       { \s -> TokenNum (read s) }
-  "->"                          { \s -> TokenArrow }
-  \=                            { \s -> TokenEq }
-  \\                            { \s -> TokenLambda }
-  [\+]                          { \s -> TokenAdd }
-  [\-]                          { \s -> TokenSub }
-  [\*]                          { \s -> TokenMul }
-  \(                            { \s -> TokenLParen }
-  \)                            { \s -> TokenRParen }
   $alpha [$alpha $digit \_ \']* { \s -> TokenSym s }
+  [\+]                          { \s -> TokenAdd }
+  [\*]                          { \s -> TokenMul }
+  [\\]                          { \s -> TokenDiv }
+  [\^]                          { \s -> TokenPow }
 
 {
 
-data Token = TokenLet
-           | TokenIn
-           | TokenLambda
-           | TokenNum Int
+data Token = TokenNum Int
            | TokenSym String
-           | TokenArrow
-           | TokenEq
            | TokenAdd
-           | TokenSub
            | TokenMul
-           | TokenLParen
-           | TokenRParen
-           deriving (Eq,Show)
+           | TokenDiv
+           | TokenPow
+             deriving (Eq,Show)
 
 scanTokens = alexScanTokens
 
