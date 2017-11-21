@@ -23,6 +23,8 @@ tokens :-
   [\/]                          { \s -> TokenDiv }
   [\^]                          { \s -> TokenPow }
   [\%]                          { \s -> TokenDiff }
+  \(                            { \s -> TokenLParen }
+  \)                            { \s -> TokenRParen }
 
 {
 
@@ -36,6 +38,8 @@ data Token = TokenSin
            | TokenDiv
            | TokenPow
            | TokenDiff
+           | TokenLParen
+           | TokenRParen
              deriving (Eq,Show)
 
 scanTokens = alexScanTokens

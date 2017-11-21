@@ -19,6 +19,8 @@ import Expr
     '%'   { TokenDiff }
     sin   { TokenSin }
     cos   { TokenCos }
+    '('   { TokenLParen }
+    ')'   { TokenRParen }
 
 %left '+'
 %left '*'
@@ -34,7 +36,8 @@ Expr : Expr '+' Expr               { Add $1 $3 }
      | Pol                         { Poly $1 }
 
 
-Pol  : VAR '^' NUM                 { PolPow $1 $3 }
+Pol  : '(' Expr ')'                { Parents $2 }
+     | VAR '^' NUM                 { PolPow $1 $3 }
      | NUM '*' Pol                 { PolScale $1 $3 }
      | Pol '+' Pol                 { PolAdd $1 $3 }
      | VAR                         { Var $1 }

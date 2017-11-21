@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-./d/s < test/t1 &&
-./d/s < test/t2 &&
-./d/s < test/t3 &&
-./d/s < test/t4
+./s < test/t1 &&
+./s < test/t2 &&
+./s < test/t3 &&
+./s < test/t4
