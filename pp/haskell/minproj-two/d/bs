@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-./b && ./s
+./d/b && ./d/s

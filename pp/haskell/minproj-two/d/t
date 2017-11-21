@@ -1,3 +1,6 @@
 #!/usr/bin/env bash
 
-./s < lambda-tests/ex1 && ./s < lambda-tests/ex2
+./d/s < test/t1 &&
+./d/s < test/t2 &&
+./d/s < test/t3 &&
+./d/s < test/t4

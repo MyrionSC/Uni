@@ -17,8 +17,7 @@ tokens :-
   sin                           { \s -> TokenSin }
   cos                           { \s -> TokenCos }
   $digit+                       { \s -> TokenNum (read s) }
-  $digit+               { \s -> TokenRat (read s) }
-  $alpha+                       { \s -> TokenSym s }
+  $alpha [$alpha $digit]*       { \s -> TokenSym s }
   [\+]                          { \s -> TokenAdd }
   [\*]                          { \s -> TokenMul }
   [\\]                          { \s -> TokenDiv }

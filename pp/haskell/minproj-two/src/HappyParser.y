@@ -11,7 +11,6 @@ import Expr
 
 %token
     NUM   { TokenNum $$ }
-    RAT   { TokenRat $$ }
     VAR   { TokenSym $$ }
     '+'   { TokenAdd }
     '*'   { TokenMul }
