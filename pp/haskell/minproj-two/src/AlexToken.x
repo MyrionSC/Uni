@@ -20,7 +20,7 @@ tokens :-
   $alpha [$alpha $digit]*       { \s -> TokenSym s }
   [\+]                          { \s -> TokenAdd }
   [\*]                          { \s -> TokenMul }
-  [\\]                          { \s -> TokenDiv }
+  [\/]                          { \s -> TokenDiv }
   [\^]                          { \s -> TokenPow }
   [\%]                          { \s -> TokenDiff }
 
