@@ -16,6 +16,7 @@ reduce (Mult (Poly (PolPow var1 ex1)) (Poly (PolPow var2 ex2))) = Poly (PolPow v
 reduce (Div (Poly (PolPow var1 ex1)) (Poly (PolPow var2 ex2))) = Poly (PolPow var1 (ex1 - ex2))
 reduce (Add (ExprPow (Sin (Poly (Var "x"))) 2) (ExprPow (Cos (Poly (Var "x"))) 2)) = Poly (Con 1)
 reduce (Add (Poly (Var e1)) (Poly (Var e2))) = Add (Poly (Var e2)) (Poly (Var e1))
+reduce (Mult (Poly (Var e1)) (Poly (Var e2))) = Poly (PolPow e1 2)
 
 -- general cases
 reduce (Add e1 e2) = Add (reduce e1) (reduce e2)
