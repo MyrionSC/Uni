@@ -12,11 +12,11 @@ solve :: Expr -> IO ()
 solve ast = do
   putStrLn $ "In: " ++ printExpr ast
   let reduced = reduce ast
-  putStrLn $ "Reduced: " ++ printExpr reduced
+  if ast == reduced
+    then putStrLn "No reduction done"
+    else putStrLn $ "Reduced to: " ++ printExpr reduced
   putStrLn ""
---  if (ast == reduced)
---    then putStrLn "sdf"
---    else putStrLn "oiuou"
+
 
 
 

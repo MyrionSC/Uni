@@ -21,10 +21,13 @@ reduce (Add (ExprPow (Sin (Poly (Var "x"))) 2) (ExprPow (Cos (Poly (Var "x"))) 2
 
 
 -- general cases
-
-
-reduce (Sin e) = reduce e
-reduce (Cos e) = reduce e
+reduce (Add e1 e2) = Add (reduce e1) (reduce e2)
+reduce (Mult e1 e2) = Mult (reduce e1) (reduce e2)
+reduce (Div e1 e2) = Div (reduce e1) (reduce e2)
+reduce (Diff e) = reduce (derive e)
+reduce (ExprPow e1 pow) = ExprPow (reduce e1) pow
+reduce (Sin e) = Sin (reduce e)
+reduce (Cos e) = Cos (reduce e)
 
 -- Polynomial cases
 reduce (Poly (PolScale c (Parents e))) = reduce e
@@ -40,6 +43,10 @@ reduce (Poly pol) = Poly pol
 
 
 -- Add (ExprPow (Sin (Poly (Var "x"))) 2) (ExprPow (Cos (Poly (Var "x"))) 2)
+
+-- diff
+derive :: Expr -> Expr
+derive e = e
 
 
 
