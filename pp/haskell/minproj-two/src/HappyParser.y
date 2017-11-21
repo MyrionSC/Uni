@@ -16,7 +16,7 @@ import Expr
     '*'   { TokenMul }
     '/'   { TokenDiv }
     '^'   { TokenPow }
-    '%'   { TokenDiff }
+    dx    { TokenDiff }
     sin   { TokenSin }
     cos   { TokenCos }
     '('   { TokenLParen }
@@ -34,7 +34,7 @@ Expr : Expr '+' Expr               { Add $1 $3 }
      | Expr '*' Expr               { Mult $1 $3 }
      | Expr '/' Expr               { Div $1 $3 }
      | Expr '^' NUM                { ExprPow $1 $3 }
-     | '%' Expr                    { Diff $2 }
+     | dx '(' Expr ')'             { Diff $3 }
      | sin '(' Expr ')'            { Sin $3 }
      | cos '(' Expr ')'            { Cos $3 }
      | Pol                         { Poly $1 }

@@ -16,13 +16,13 @@ tokens :-
   "#".*                         ;
   sin                           { \s -> TokenSin }
   cos                           { \s -> TokenCos }
+  dx                            { \s -> TokenDiff }
   $digit+                       { \s -> TokenNum (read s) }
   $alpha [$alpha $digit]*       { \s -> TokenSym s }
   [\+]                          { \s -> TokenAdd }
   [\*]                          { \s -> TokenMul }
   [\/]                          { \s -> TokenDiv }
   [\^]                          { \s -> TokenPow }
-  [\%]                          { \s -> TokenDiff }
   \(                            { \s -> TokenLParen }
   \)                            { \s -> TokenRParen }
 
