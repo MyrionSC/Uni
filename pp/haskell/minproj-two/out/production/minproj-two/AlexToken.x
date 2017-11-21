@@ -14,8 +14,11 @@ tokens :-
   $eol                          ;
   $white+                       ;
   "#".*                         ;
+  sin                           { \s -> TokenSin }
+  cos                           { \s -> TokenCos }
   $digit+                       { \s -> TokenNum (read s) }
-  $alpha [$alpha $digit \_ \']* { \s -> TokenSym s }
+  $digit+\.digit+               { \s -> TokenRat (read s) }
+  $alpha+                       { \s -> TokenSym s }
   [\+]                          { \s -> TokenAdd }
   [\*]                          { \s -> TokenMul }
   [\\]                          { \s -> TokenDiv }
@@ -24,7 +27,10 @@ tokens :-
 
 {
 
-data Token = TokenNum Int
+data Token = TokenSin
+           | TokenCos
+           | TokenNum Int
+           | TokenRat Rational
            | TokenSym String
            | TokenAdd
            | TokenMul

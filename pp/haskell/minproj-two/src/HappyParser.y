@@ -11,6 +11,7 @@ import Expr
 
 %token
     NUM   { TokenNum $$ }
+    RAT   { TokenRat $$ }
     VAR   { TokenSym $$ }
     '+'   { TokenAdd }
     '*'   { TokenMul }
@@ -35,9 +36,8 @@ Expr : Expr '+' Expr               { Add $1 $3 }
 
 
 Pol  : VAR '^' NUM                 { PolPow $1 $3 }
-     | Var                         { $1 }
-
-Var  : VAR                         { Var $1 }
+     | NUM '*' Pol                 { PolScale $1 $3 }
+     | VAR                         { Var $1 }
 
 {
 parseError :: [Token] -> a

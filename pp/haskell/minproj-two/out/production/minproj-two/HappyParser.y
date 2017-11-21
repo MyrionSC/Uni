@@ -11,12 +11,15 @@ import Expr
 
 %token
     NUM   { TokenNum $$ }
+    RAT   { TokenRat $$ }
     VAR   { TokenSym $$ }
     '+'   { TokenAdd }
     '*'   { TokenMul }
     '/'   { TokenDiv }
     '^'   { TokenPow }
     '%'   { TokenDiff }
+    sin   { TokenSin }
+    cos   { TokenCos }
 
 %left '+'
 %left '*'
@@ -27,10 +30,13 @@ Expr : Expr '+' Expr               { Add $1 $3 }
      | Expr '*' Expr               { Mult $1 $3 }
      | Expr '/' Expr               { Div $1 $3 }
      | '%' Expr                    { Diff $2 }
+     | sin Expr                    { Sin $2 }
+     | cos Expr                    { Cos $2 }
      | Pol                         { Poly $1 }
 
 
 Pol  : VAR '^' NUM                 { PolPow $1 $3 }
+     | RAT '*' Pol                 { PolScale $1 $3 }
      | Var                         { $1 }
 
 Var  : VAR                         { Var $1 }

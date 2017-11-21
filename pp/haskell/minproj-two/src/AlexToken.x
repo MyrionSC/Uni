@@ -17,6 +17,7 @@ tokens :-
   sin                           { \s -> TokenSin }
   cos                           { \s -> TokenCos }
   $digit+                       { \s -> TokenNum (read s) }
+  $digit+               { \s -> TokenRat (read s) }
   $alpha+                       { \s -> TokenSym s }
   [\+]                          { \s -> TokenAdd }
   [\*]                          { \s -> TokenMul }
@@ -29,6 +30,7 @@ tokens :-
 data Token = TokenSin
            | TokenCos
            | TokenNum Int
+           | TokenRat Rational
            | TokenSym String
            | TokenAdd
            | TokenMul
