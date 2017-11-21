@@ -1,7 +1,7 @@
 module Expr where
 
 data Expr = Poly Pol | Add Expr Expr | Mult Expr Expr | Div Expr Expr | Diff Expr | ExprPow Expr Pow | Sin Expr | Cos Expr deriving (Show, Eq)
-data Pol = Var Id | PolScale Const Pol | PolAdd Pol Pol | PolPow Id Pow | Parents Expr deriving (Show, Eq)
+data Pol = Var Id | Con Const | PolScale Pol Pol | PolAdd Pol Pol | PolPow Id Pow | Parents Expr deriving (Show, Eq)
 
 type Id = String
 type Const = Int

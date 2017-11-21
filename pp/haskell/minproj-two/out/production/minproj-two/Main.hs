@@ -7,11 +7,11 @@ runEvalWith :: (String -> Expr) -> String -> IO ()
 runEvalWith parseExpr input = do
   let ast = parseExpr input
   putStrLn $ "AST: " ++ (show ast)
+  putStrLn ""
+  main
 
 main :: IO ()
 main = do
-  input <- getContents
   putStrLn "Input:"
-  putStrLn input
+  input <- getLine
   runEvalWith HappyParser.parseExpr input
-  putStrLn ""

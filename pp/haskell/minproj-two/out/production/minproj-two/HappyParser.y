@@ -23,7 +23,10 @@ import Expr
     ')'   { TokenRParen }
 
 %left '+'
-%left '*'
+%left '*' '/'
+%left '^'
+%left '%'
+%left '(' ')'
 
 %%
 

@@ -23,7 +23,10 @@ import Expr
     ')'   { TokenRParen }
 
 %left '+'
-%left '*'
+%left '*' '/'
+%left '^'
+%left '%'
+%left '(' ')'
 
 %%
 
@@ -38,9 +41,10 @@ Expr : Expr '+' Expr               { Add $1 $3 }
 
 Pol  : '(' Expr ')'                { Parents $2 }
      | VAR '^' NUM                 { PolPow $1 $3 }
-     | NUM '*' Pol                 { PolScale $1 $3 }
+     | Pol '*' Pol                 { PolScale $1 $3 }
      | Pol '+' Pol                 { PolAdd $1 $3 }
      | VAR                         { Var $1 }
+     | NUM                         { Con $1 }
 
 {
 parseError :: [Token] -> a
