@@ -1,2 +1,2 @@
-# should evaluate to x
+#11: 1 · (sin x · sin x + cos x · cos x) · x^3 / x^2 => x
 1 · (sin x · sin x + cos x · cos x) · x^3 / x^2
