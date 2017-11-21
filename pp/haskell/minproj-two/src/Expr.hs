@@ -11,7 +11,7 @@ module Expr where
 
 --data Expr = Poly Pol | Add Expr Expr | Mult Expr Expr | Div Expr Expr | Diff Id Expr | Sin Expr | Cos Expr deriving (Show, Eq)
 --data Pol = Var Id | PolScale Const Pol | PolAdd Pol Pol | PolPow Id Pow deriving (Show, Eq)
-data Expr = Poly Pol | Add Expr Expr | Mult Expr Expr | Div Expr Expr | Diff Expr deriving (Show, Eq)
+data Expr = Poly Pol | Add Expr Expr | Mult Expr Expr | Div Expr Expr | Diff Expr | Sin Expr | Cos Expr deriving (Show, Eq)
 data Pol = Var Id | PolPow Id Int deriving (Show, Eq)
 
 type Id = String
