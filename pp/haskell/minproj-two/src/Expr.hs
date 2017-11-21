@@ -7,41 +7,73 @@ type Id = String
 type Const = Int
 type Pow = Int
 
+prettyPrint expr = case expr of
+    (Poly pol) -> prettyPrintPol pol
+    (Add e1 e2) -> prettyPrint e1 ++ " + " ++ prettyPrint e2
+    (Mult e1 e2) -> prettyPrint e1 ++ " * " ++ prettyPrint e2
+    (Div e1 e2) -> prettyPrint e1 ++ " / " ++ prettyPrint e2
+    (Diff e1) -> "dx(" ++ prettyPrint e1 ++ ")"
+    (ExprPow e1 pow) -> prettyPrint e1 ++ " ^ " ++ show pow
+    (Sin e1) -> "sin(" ++ prettyPrint e1 ++ ")"
+    (Cos e1) -> "cos(" ++ prettyPrint e1 ++ ")"
+
+prettyPrintPol pol = case pol of
+    (Var id) -> id
+    (Con c) -> show c
+    (PolScale c p) -> show c ++ " * " ++ prettyPrintPol p
+    (PolPow id pow) -> id ++ " ^ " ++ show pow
+    (Parents e1) -> "(" ++ prettyPrint e1 ++ ")"
+
 
 --reduce function. Takes an expression (which is in tree form) and reduces recursively untill no changes are happening anymore
 reduce :: Expr -> Expr
 
--- reduction cases
-reduce (Mult (Poly (PolPow var1 ex1)) (Poly (PolPow var2 ex2))) = Poly (PolPow var1 (ex1 + ex2))
-reduce (Div (Poly (PolPow var1 ex1)) (Poly (PolPow var2 ex2))) = Poly (PolPow var1 (ex1 - ex2))
-reduce (Add (ExprPow (Sin (Poly (Var "x"))) 2) (ExprPow (Cos (Poly (Var "x"))) 2)) = Poly (Con 1)
-reduce (Add (Poly (Var e1)) (Poly (Var e2))) = Add (Poly (Var e2)) (Poly (Var e1))
-reduce (Mult (Poly (Var e1)) (Poly (Var e2))) = Poly (PolPow e1 2)
-
--- general cases
+reduce (Add (ExprPow (Sin (Poly (Var x1))) 2) (ExprPow (Cos (Poly (Var x2))) 2)) = Poly (Con 1)
 reduce (Add e1 e2) = Add (reduce e1) (reduce e2)
+
+reduce (Mult (Poly (PolPow var1 ex1)) (Poly (PolPow var2 ex2))) = Poly (PolPow var1 (ex1 + ex2))
+reduce (Mult (Poly (Var e1)) (Poly (Var e2))) = if e1==e2 then Poly (PolPow e1 2) else Mult (Poly (Var e1)) (Poly (Var e2))
+reduce (Mult (Poly (Var e1)) (Poly (Parents (Add (Poly (Var e2)) (Poly (Var e3)))))) =
+       Add (Mult (Poly (Var e1)) (Poly (Var e2))) (Mult (Poly (Var e1)) (Poly (Var e3)))
 reduce (Mult e1 e2) = Mult (reduce e1) (reduce e2)
+
+reduce (Div (Poly (PolPow var1 ex1)) (Poly (PolPow var2 ex2))) = Poly (PolPow var1 (ex1 - ex2))
 reduce (Div e1 e2) = Div (reduce e1) (reduce e2)
+
 reduce (Diff e) = reduce (derive e)
+
 reduce (ExprPow e1 pow) = ExprPow (reduce e1) pow
+
+reduce (Poly (PolScale 1 (Var id))) = Poly (Var id)
+reduce (Poly (PolScale 1 (PolPow id pow))) = Poly (PolPow id pow)
+reduce (Poly (PolScale c (PolPow x 1))) = Poly (PolScale c (Var x))
+
 reduce (Sin e) = Sin (reduce e)
 reduce (Cos e) = Cos (reduce e)
 
--- Polynomial cases -- only PolScale and Parents can result in a reduction, the rest of the time we just return the polynomial
-reduce (Poly (PolScale c (Parents e))) = reduce e
-reduce (Poly (Parents e)) = reduce e
+reduce (Poly (PolScale c (Parents e))) = Poly (PolScale c (Parents (reduce e)))
+reduce (Poly (PolPow id pow)) = Poly (PolPow id pow)
+reduce (Poly (Parents (Poly (Var id)))) = Poly (Var id)
+reduce (Poly (Parents e)) = Poly (Parents (reduce e))
 reduce (Poly pol) = Poly pol
 
--- Add (ExprPow (Sin (Poly (Var "x"))) 2) (ExprPow (Cos (Poly (Var "x"))) 2)
 
 -- diff
 derive :: Expr -> Expr
-derive e = e
+derive (Poly (PolPow x pow)) = Poly (PolScale pow (PolPow x (pow-1)))
+derive (Poly (PolScale c (Var x))) = Poly (Con c)
+derive (Poly (Var x)) = Poly (Con 1)
+derive (Add e1 e2) = Add (derive e1) (derive e2)
+derive (Sin e) = Cos e
+derive (Cos e) = Sin e
+derive (Diff e) = derive e
 
 
 
 
 
+
+-- dx(x^4 + dx(cos (x)))
 
 
 

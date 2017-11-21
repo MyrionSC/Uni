@@ -25,7 +25,7 @@ import Expr
 %left '+'
 %left '*' '/'
 %left '^'
-%left '%'
+%left dx
 %left '(' ')'
 
 %%

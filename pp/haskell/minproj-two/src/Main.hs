@@ -1,29 +1,27 @@
 module Main where
 
+import System.IO
+
 import HappyParser
 import Expr
 
---getFirst :: [[String]] -> [String]
---getFirst (x:xs) = x
---getSecond (x:xs) = getFirst xs
-
-
+-- reduce untill there are no changes
 solve :: Expr -> IO ()
 solve ast = do
-  putStrLn $ "In: " ++ printExpr ast
   let reduced = reduce ast
   if ast == reduced
-    then putStrLn "No reduction done"
-    else putStrLn $ "Reduced to: " ++ printExpr reduced
-  putStrLn ""
-
-
-
+    then do
+      putStrLn $ "Out: " ++ printExpr reduced
+      putStrLn $ "Pretty: " ++ prettyPrint reduced
+    else solve reduced
 
 main :: IO ()
 main = do
---  putStrLn "Input:"
+  putStrLn "Input:"
   input <- getContents
   putStrLn input
   let ast = parseExpr input
+  putStrLn $ "In: " ++ printExpr ast
   solve ast
+  putStrLn ""
+
