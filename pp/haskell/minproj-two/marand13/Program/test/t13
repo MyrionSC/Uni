@@ -1,0 +1,2 @@
+#12: dx(x^4 + dx(cos (x))) => 4x^3 - cos (x)
+dx(x^4 + dx(cos (x)))
