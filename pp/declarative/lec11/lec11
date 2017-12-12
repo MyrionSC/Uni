@@ -1,0 +1,35 @@
+Problem 1. Write a Prolog program that does not terminate.
+
+    base(const).
+    rec(X) :- rec(X), base(X).
+
+Problem 2. Write a Prolog program that cannot be expressed in Datalog.
+
+    nat(x).
+    nat(s(X)) :- nat(X).
+
+    The herbrandt universe is infinite, so it cannot be expressed in datalog
+
+Problem 3. Write a Prolog program that use an unsafe fact.
+
+    loves(rose, X).
+
+    It is unsafe because there is a variable in a base rule
+
+Problem 4. The natural numbers are defined as:
+Nat(Z).
+Nat(S(x)) ⇐ Nat(x).
+Implement the following relations on natural numbers: +, −, ×, ≤, and minimum.
+
+
+
+Problem 5. Describe how Prolog enables computation of subtraction from addition.
+Problem 6. Use Prolog to determine if the following equations have a solution:
+• x = 1 + 2
+• x + 2 = 3
+• x × x = 3
+• x × x + 1 = 26
+• x ≤ minimum(x, y)
+where x and y are natural numbers.
+Problem 7. Implement Odd(n) and Even(n) to determine if a number is odd or even.
+Problem 8. Implement the Fibonacci function.
