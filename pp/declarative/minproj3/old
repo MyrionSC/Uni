@@ -1,0 +1,14 @@
+
+%airport(cph, copenhagen, denmark).
+%airport(bll, billund, denmark).
+%airport(ode, odense, denmark).
+%airport(aar, aarhus, denmark).
+%airport(bhx, birmingham, england).
+%airport(cbg, cambridge, england).
+%airport(ber, berlin, germany).
+%airport(bre, bremen, germany).
+
+%aircraft(2, cesna, "Textron Aviation").
+%aircraft(3, f16, "Lockheed Martin").
+%aircraft(4, f16, "Lockheed Martin").
+%aircraft(5, "Airbus A380", "Airbus Industrie").
