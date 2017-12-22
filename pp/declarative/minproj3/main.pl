@@ -2,25 +2,16 @@
 % --- Problem 1. Introduce appropriate predicates for the entities in the system.
 % --- Problem 2. Introduce facts for your choosen predicates.
 
-weather(Weather) :- string(Weather).
-weather(clear).
-weather(cloudy).
-weather(stormy).
-weather(thunderstorm).
-
 airline(Name) :- string(Name).
 airline(sas).
 airline(norwegian).
 
 airport(Code, Country, Weather) :- string(Code), string(Country), weather(Weather).
-airport(aal, denmark).
-airport(lon, england).
-airport(agb, germany).
-airport(ruh, "Saudi Arabia").
+airport(aal, denmark, clear).
+airport(lon, england, thunderstorm).
+airport(agb, germany, stormy).
+airport(ruh, "Saudi Arabia", cloudy).
 
-% aircraft(reg, owner, modelName).
-% seat(aircraft, number, class, type).
-% adjacantSeat(seat1, seat2).
 aircraft(Reg, Owner, Model) :- number(Reg), string(Owner), string(Model).
 aircraft(1, sas, cesna).
 aircraft(2, norwegian, "Airbus A380").
@@ -73,6 +64,12 @@ visaAgreement(denmark, germany).
 visaAgreement(germany, england).
 visaAgreement(england, denmark).
 
+weather(Weather) :- string(Weather).
+weather(clear).
+weather(cloudy).
+weather(stormy).
+weather(thunderstorm).
+
 
 
 
@@ -80,9 +77,6 @@ visaAgreement(england, denmark).
 %the country where the airport resides or if there is a visa agreement between
 %the country of the passport holder and the country of the airport.
 % --- Problem 3. Compute the airports a passenger may fly into.
-
-
-
 
 
 
