@@ -60,9 +60,11 @@ itinerary("010", "R2D2").
 itinerary("010", "BB8").
 
 visaAgreement(CountryA, CountryB) :- string(CountryA), string(CountryB).
-visaAgreement(denmark, germany).
-visaAgreement(germany, england).
-visaAgreement(england, denmark).
+visaAgreement(CountryA, CountryB) :- visaA(CountryA, CountryB).
+visaAgreement(CountryA, CountryB) :- visaA(CountryB, CountryA).
+visaA(denmark, germany).
+visaA(germany, england).
+visaA(england, denmark).
 
 weather(Weather) :- string(Weather).
 weather(clear).
@@ -71,14 +73,16 @@ weather(stormy).
 weather(thunderstorm).
 
 
-
-
 %A passenger is allowed to fly into an airport if he or she holds a passport from
 %the country where the airport resides or if there is a visa agreement between
 %the country of the passport holder and the country of the airport.
 % --- Problem 3. Compute the airports a passenger may fly into.
 
-
+mayFlyTo(PassengerId, AirportCode) :- passport(PassengerId, Country),
+                                    airport(AirportCode, Country, _).
+mayFlyTo(PassengerId, AirportCode) :- passport(PassengerId, Origin),
+                                    visaAgreement(Origin, Destination),
+                                    airport(AirportCode, Destination, _).
 
 
 %A passenger may have a reservation which is illegal in the sense that he or
