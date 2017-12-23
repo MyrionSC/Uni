@@ -91,13 +91,17 @@ mayFlyTo(PassengerId, AirportCode) :- passport(PassengerId, Origin),
 % --- Problem 4. Compute the passengers that have illegal reservations.
 
 legalReservations(Pid, Rid, Dest) :- reservation(Rid, Pid, _, Dest, _, _, _), mayFlyTo(Pid, Dest).
-illegalReservations(Pid, Rid, Dest) :- reservation(Rid, Pid, _, Dest, _, _, _), not(legalReservations(Pid, Rid, Dest)).
+illegalReservations(Pid) :- reservation(Rid, Pid, _, Dest, _, _, _), not(legalReservations(Pid, Rid, Dest)).
 
 %\+((treeHeight(T, Y), Y > X))
 
 %A double booking occurs when the same seat on the same leg of a flight is
 %reserved by two different passe
 % --- Problem 5. Compute the booking code of all double bookings.
+
+
+
+
 
 
 
