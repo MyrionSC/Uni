@@ -22,9 +22,11 @@ seat(2, "1A", business, window).
 seat(2, "1B", business, other).
 seat(2, "1C", business, aisle).
 adjacantSeat(Reg, Seat1, Seat2) :- number(Reg), string(Seat1), string(Seat2).
-adjacantSeat(1, "1A", "1B").
-adjacantSeat(2, "1A", "1B").
-adjacantSeat(2, "1B", "1C").
+adjacantSeat(Reg, Seat1, Seat2) :- aSeat(Reg, Seat1, Seat2).
+adjacantSeat(Reg, Seat1, Seat2) :- aSeat(Reg, Seat2, Seat1).
+aSeat(1, "1A", "1B").
+aSeat(2, "1A", "1B").
+aSeat(2, "1B", "1C").
 
 model(Name, Class, Manufactorer) :- string(Name), string(Class), string(Manufactorer).
 model(cesna, light, "Textron Aviation").
@@ -51,10 +53,13 @@ leg(ruh, aal, norwegian, 2).
 
 reservation(Code, Passenger, Origin, Destination, Aircraft, SeatNumber) :- string(Code), number(Passenger), string(Origin), string(Destination), string(Aircraft), string(SeatNumber).
 reservation("R2D2", 1, aal, agb, 2, "1A").
-reservation("BB8", 1, agb, lon, 1, "1C").
+reservation("003", 2, aal, agb, 2, "1B").
+reservation("003", 4, aal, agb, 2, "1C").
+%reservation("BB8", 1, agb, lon, 1, "1A").
 reservation("C3PO", 2, lon, aal, 1, "1A"). % double reservation
 reservation("IG88", 3, lon, aal, 1, "1A"). % double reservation % illegal reservation
-reservation("BB9E", 4, aal, ruh, 2, "1B").
+reservation("001", 1, lon, aal, 1, "1B").
+%reservation("BB9E", 4, aal, ruh, 2, "1B").
 
 itinerary(Code, ReservationCode) :- string(Code), string(ReservationCode).
 itinerary("010", "R2D2").
@@ -94,11 +99,11 @@ legalReservations(Pid, Rid, Dest) :- reservation(Rid, Pid, _, Dest, _, _), mayFl
 illegalReservations(Pid) :- reservation(Rid, Pid, _, Dest, _, _), not(legalReservations(Pid, Rid, Dest)).
 
 %A double booking occurs when the same seat on the same leg of a flight is
-%reserved by two different passe
+%reserved by two different passengers
 % --- Problem 5. Compute the booking code of all double bookings.
 
-doubleBookings(Rid) :- reservation(Rid, _, Origin, Destination, Airline, SeatNumber),
-                       reservation(Rid2, _, Origin, Destination, Airline, SeatNumber),
+doubleBookings(Rid) :- reservation(Rid, _, Origin, Destination, Aircraft, SeatNumber),
+                       reservation(Rid2, _, Origin, Destination, Aircraft, SeatNumber),
                        Rid \= Rid2.
 
 %An aircraft, i.e. a flight leg, is “cleared for takeoff ” if there are no double
@@ -106,6 +111,13 @@ doubleBookings(Rid) :- reservation(Rid, _, Origin, Destination, Airline, SeatNum
 %every passenger is allowed to travel to the destination country.
 % --- Problem 6. Compute the aircraft that are permitted to takeoff.
 
+% all reservations on a given leg
+
+
+% no double bookings
+noDoubleBookings(Rid) :- \+ doubleBookings(Rid).
+
+%cleared :-
 
 
 %A passenger can book a flight, i.e. create an itinerary, from one airport to
