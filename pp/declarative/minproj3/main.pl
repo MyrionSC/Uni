@@ -7,10 +7,10 @@ airline(sas).
 airline(norwegian).
 
 airport(Code, Country, Weather) :- string(Code), string(Country), weather(Weather).
-airport(aal, denmark, clear).
-airport(lon, england, thunderstorm).
 airport(agb, germany, stormy).
+airport(lon, england, thunderstorm).
 airport(ruh, "Saudi Arabia", cloudy).
+airport(aal, denmark, clear).
 
 aircraft(Reg, Owner, Model) :- number(Reg), string(Owner), string(Model).
 aircraft(1, sas, cesna).
@@ -38,10 +38,10 @@ passenger(4, patrick, brix, "4-12-1992").
 
 passport(Owner, Country) :- number(Owner), string(Country).
 passport(1, germany).
-passport(2, norway).
-passport(3, poland).
+passport(2, england).
+passport(3, "Saudi Arabia").
 passport(4, denmark).
-passport(4, sweden).
+passport(4, england).
 
 leg(Origin, Destination, Servicer, Aircraft) :- string(Origin), string(Destination), string(Servicer), number(Aircraft).
 leg(aal, lon, sas, 1).
@@ -52,8 +52,9 @@ leg(ruh, aal, norwegian, 2).
 reservation(Code, Passenger, Origin, Destination, Airline, SeatNumber) :- string(Code), number(Passenger), string(Origin), string(Destination), string(Airline), string(SeatNumber).
 reservation("R2D2", 1, aal, agb, sas, 2, "1A").
 reservation("BB8", 1, agb, lon, sas, 1, "1C").
-reservation("C3PO", 2, ruh, lon, norwegian, 1, "1A").
-reservation("IG88", 3, ruh, lon, norwegian, 1, "1A").
+reservation("C3PO", 2, lon, aal, norwegian, 1, "1A").
+reservation("IG88", 3, lon, aal, norwegian, 1, "1A"). % double reservation % illegal reservation
+reservation("BB9E", 4, aal, ruh, norwegian, 2, "1B").
 
 itinerary(Code, ReservationCode) :- string(Code), string(ReservationCode).
 itinerary("010", "R2D2").
@@ -63,8 +64,9 @@ visaAgreement(CountryA, CountryB) :- string(CountryA), string(CountryB).
 visaAgreement(CountryA, CountryB) :- visaA(CountryA, CountryB).
 visaAgreement(CountryA, CountryB) :- visaA(CountryB, CountryA).
 visaA(denmark, germany).
+visaA(denmark, england).
 visaA(germany, england).
-visaA(england, denmark).
+visaA(england, "Saudi Arabia").
 
 weather(Weather) :- string(Weather).
 weather(clear).
@@ -84,13 +86,14 @@ mayFlyTo(PassengerId, AirportCode) :- passport(PassengerId, Origin),
                                     visaAgreement(Origin, Destination),
                                     airport(AirportCode, Destination, _).
 
-
 %A passenger may have a reservation which is illegal in the sense that he or
 %she is not permitted to enter the country of the destination airport.
 % --- Problem 4. Compute the passengers that have illegal reservations.
 
+legalReservations(Pid, Rid, Dest) :- reservation(Rid, Pid, _, Dest, _, _, _), mayFlyTo(Pid, Dest).
+illegalReservations(Pid, Rid, Dest) :- reservation(Rid, Pid, _, Dest, _, _, _), not(legalReservations(Pid, Rid, Dest)).
 
-
+%\+((treeHeight(T, Y), Y > X))
 
 %A double booking occurs when the same seat on the same leg of a flight is
 %reserved by two different passe
