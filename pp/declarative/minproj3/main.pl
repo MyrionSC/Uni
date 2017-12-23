@@ -52,7 +52,7 @@ leg(ruh, aal, norwegian, 2).
 reservation(Code, Passenger, Origin, Destination, Aircraft, SeatNumber) :- string(Code), number(Passenger), string(Origin), string(Destination), string(Aircraft), string(SeatNumber).
 reservation("R2D2", 1, aal, agb, 2, "1A").
 reservation("BB8", 1, agb, lon, 1, "1C").
-reservation("C3PO", 2, lon, aal, 1, "1A").
+reservation("C3PO", 2, lon, aal, 1, "1A"). % double reservation
 reservation("IG88", 3, lon, aal, 1, "1A"). % double reservation % illegal reservation
 reservation("BB9E", 4, aal, ruh, 2, "1B").
 
@@ -93,21 +93,13 @@ mayFlyTo(PassengerId, AirportCode) :- passport(PassengerId, Origin),
 legalReservations(Pid, Rid, Dest) :- reservation(Rid, Pid, _, Dest, _, _), mayFlyTo(Pid, Dest).
 illegalReservations(Pid) :- reservation(Rid, Pid, _, Dest, _, _), not(legalReservations(Pid, Rid, Dest)).
 
-%\+((treeHeight(T, Y), Y > X))
-
 %A double booking occurs when the same seat on the same leg of a flight is
 %reserved by two different passe
 % --- Problem 5. Compute the booking code of all double bookings.
 
-doubleBookings(Pid, Rid) :- reservation(Rid, Pid, _, _, _, _).
-%doubleBookings(Rid) :- reservation(Rid, Pid, Origin, Destination, Aircraft, SeatNumber).
-%doubleBookings(Rid) :- reservation(Rid, _, Origin, Destination, Airline, SeatNumber),
-%                       reservation(Rid2, _, Origin, Destination, Airline, SeatNumber).
-
-
-
-
-
+doubleBookings(Rid) :- reservation(Rid, _, Origin, Destination, Airline, SeatNumber),
+                       reservation(Rid2, _, Origin, Destination, Airline, SeatNumber),
+                       Rid \= Rid2.
 
 %An aircraft, i.e. a flight leg, is “cleared for takeoff ” if there are no double
 %bookings on it, the weather at the origin and destination is within limits, and
@@ -132,3 +124,7 @@ doubleBookings(Pid, Rid) :- reservation(Rid, Pid, _, _, _, _).
 %two passengers must travel on business class, have adjacent seats, and one of the seats
 %must be a window seat.
 
+
+
+
+%\+((treeHeight(T, Y), Y > X))
