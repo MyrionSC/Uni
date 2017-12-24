@@ -46,14 +46,14 @@ passport(4, denmark).
 passport(4, england).
 
 leg(Origin, Destination, Servicer, Aircraft) :- string(Origin), string(Destination), string(Servicer), number(Aircraft).
-leg(aal, lon, sas, 1).
-leg(lon, agb, sas, 2).
+leg(lon, aal, sas, 1).
+leg(aal, agb, sas, 2).
 leg(augs, ruh, norwegian, 1).
 leg(ruh, aal, norwegian, 2).
 
 reservation(Code, Passenger, Origin, Destination, Aircraft, SeatNumber) :- string(Code), number(Passenger), string(Origin), string(Destination), string(Aircraft), string(SeatNumber).
 reservation("R2D2", 1, aal, agb, 2, "1A").
-reservation("003", 2, aal, agb, 2, "1B").
+reservation("002", 2, aal, agb, 2, "1B").
 reservation("003", 4, aal, agb, 2, "1C").
 %reservation("BB8", 1, agb, lon, 1, "1A").
 reservation("C3PO", 2, lon, aal, 1, "1A"). % double reservation
@@ -91,6 +91,7 @@ mayFlyTo(PassengerId, AirportCode) :- passport(PassengerId, Origin),
                                     visaAgreement(Origin, Destination),
                                     airport(AirportCode, Destination, _).
 
+
 %A passenger may have a reservation which is illegal in the sense that he or
 %she is not permitted to enter the country of the destination airport.
 % --- Problem 4. Compute the passengers that have illegal reservations.
@@ -98,26 +99,50 @@ mayFlyTo(PassengerId, AirportCode) :- passport(PassengerId, Origin),
 legalReservations(Pid, Rid, Dest) :- reservation(Rid, Pid, _, Dest, _, _), mayFlyTo(Pid, Dest).
 illegalReservations(Pid) :- reservation(Rid, Pid, _, Dest, _, _), not(legalReservations(Pid, Rid, Dest)).
 
+
 %A double booking occurs when the same seat on the same leg of a flight is
 %reserved by two different passengers
 % --- Problem 5. Compute the booking code of all double bookings.
 
-doubleBookings(Rid) :- reservation(Rid, _, Origin, Destination, Aircraft, SeatNumber),
-                       reservation(Rid2, _, Origin, Destination, Aircraft, SeatNumber),
-                       Rid \= Rid2.
+doubleBookings(Rid) :-
+        reservation(Rid, _, Origin, Destination, Aircraft, SeatNumber),
+        reservation(Rid2, _, Origin, Destination, Aircraft, SeatNumber),
+        Rid \= Rid2.
+
 
 %An aircraft, i.e. a flight leg, is “cleared for takeoff ” if there are no double
 %bookings on it, the weather at the origin and destination is within limits, and
 %every passenger is allowed to travel to the destination country.
 % --- Problem 6. Compute the aircraft that are permitted to takeoff.
 
-% all reservations on a given leg
+%leg(Origin, Destination, Servicer, Aircraft) :- string(Origin), string(Destination), string(Servicer), number(Aircraft).
+% leg(lon, aal, sas, 1). % should fail
+% leg(aal, agb, sas, 2). % should succeed
+
+% no double bookings for leg
+bookingsNotDoubleOnLeg(Origin, Dest, Aircraft, Rid) :-
+        reservation(Rid, _, Origin, Dest, Aircraft, _),
+        not(doubleBookings(Rid)).
+noDoubleBookingsForLeg(Origin, Dest, Aircraft) :-
+        findall(_, reservation(Rid, _, Origin, Dest, Aircraft, _), ResLegList),
+        length(ResLegList, ResLegLen),
+        findall(_, bookingsNotDoubleOnLeg(Origin, Dest, Aircraft, Rid), NoDoubleList),
+        length(NoDoubleList, NoDoubleLen),
+        ResLegLen = NoDoubleLen.
 
 
-% no double bookings
-noDoubleBookings(Rid) :- \+ doubleBookings(Rid).
 
-%cleared :-
+
+%legCleared(Origin, Dest, Servicer, Aircraft) :- leg(Origin, Dest, Servicer, Aircraft), % does leg exist
+%                                                reservation(Rid, Pid, Origin, Dest, Aircraft, _), % find reservations for leg
+%                                                not(doubleBookings(Rid)),
+%                                                mayFlyTo(Pid, Dest).
+%leg(lon, aal, sas, 1).
+
+legCleared(Origin, Dest, Servicer, Aircraft) :-
+        leg(Origin, Dest, Servicer, Aircraft), % does leg exist
+        noDoubleBookingsForLeg(Origin, Dest, Aircraft).
+
 
 
 %A passenger can book a flight, i.e. create an itinerary, from one airport to
