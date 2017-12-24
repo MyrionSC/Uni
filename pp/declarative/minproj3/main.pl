@@ -17,9 +17,9 @@ apCode(lon).
 apCode(ruh).
 apCode(aal).
 
-model(Model) :- string(Model).
-model(cesna).
-model("Airbus A380").
+apModel(Model) :- string(Model).
+apModel(cesna).
+apModel("Airbus A380").
 
 seatClass(Class) :- string(Class).
 seatClass(economy).
@@ -44,9 +44,16 @@ weather(cloudy). % light and heavy can fly
 weather(stormy). % heavy can fly
 weather(thunderstorm). % non can fly
 
+canFly(Model, Weather) :- apModel(Model), weather(Weather).
+canFly(light, clear).
+canFly(light, cloudy).
+canFly(heavy, clear).
+canFly(heavy, cloudy).
+canFly(heavy, stormy).
+
 % --- Problem 2. Introduce facts for your choosen predicates.
 
-airport(Code, Country, Weather) :- string(Code), string(Country), weather(Weather).
+airport(Code, Country, Weather) :- string(Code), country(Country), weather(Weather).
 airport(agb, germany, stormy).
 airport(lon, england, thunderstorm).
 airport(ruh, "Saudi Arabia", cloudy).
@@ -166,18 +173,22 @@ noDoubleBookingsForLeg(Origin, Dest, Aircraft) :-
         length(NoDoubleList, NoDoubleLen),
         ResLegLen = NoDoubleLen.
 
+% canFly
+takeOffConditions(Origin, Dest, Aircraft) :-
+        aircraft(Aircraft, _, Model),
+        model(Model, Class, _),
+        airport(Origin, _, OriginWeather),
+        airport(Dest, _, DestWeather),
+        canFly(Class, OriginWeather),
+        canFly(Class, DestWeather).
 
 
-
-%legCleared(Origin, Dest, Servicer, Aircraft) :- leg(Origin, Dest, Servicer, Aircraft), % does leg exist
-%                                                reservation(Rid, Pid, Origin, Dest, Aircraft, _), % find reservations for leg
-%                                                not(doubleBookings(Rid)),
-%                                                mayFlyTo(Pid, Dest).
-%leg(lon, aal, sas, 1).
+% no illegal passengers on flight
 
 legCleared(Origin, Dest, Servicer, Aircraft) :-
         leg(Origin, Dest, Servicer, Aircraft), % does leg exist
         noDoubleBookingsForLeg(Origin, Dest, Aircraft).
+
 
 
 
@@ -201,3 +212,5 @@ legCleared(Origin, Dest, Servicer, Aircraft) :-
 
 
 %\+((treeHeight(T, Y), Y > X))
+
+
