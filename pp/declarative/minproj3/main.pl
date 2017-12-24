@@ -46,17 +46,16 @@ weather(thunderstorm). % non can fly
 
 % --- Problem 2. Introduce facts for your choosen predicates.
 
-airport(Code, Country, Weather) :- apCode(Code), country(Country), weather(Weather).
+airport(Code, Country, Weather) :- string(Code), string(Country), weather(Weather).
 airport(agb, germany, stormy).
 airport(lon, england, thunderstorm).
 airport(ruh, "Saudi Arabia", cloudy).
 airport(aal, denmark, clear).
 
-aircraft(Reg, Owner, Model) :- number(Reg), airline(Owner), model(Model).
+aircraft(Reg, Owner, Model) :- number(Reg), airline(Owner), string(Model).
 aircraft(1, sas, cesna).
 aircraft(2, norwegian, "Airbus A380").
-
-seat(Reg, SeatNumber, Class, Type) :- number(Reg), string(SeatNumber), seatClass(Class), seatType(Type).
+seat(Reg, SeatNumber, Class, Type) :- number(Reg), string(SeatNumber), string(Class), string(Type).
 seat(1, "1A", economy, window).
 seat(1, "1B", economy, aisle).
 seat(2, "1A", business, window).
@@ -69,7 +68,7 @@ aSeat(1, "1A", "1B").
 aSeat(2, "1A", "1B").
 aSeat(2, "1B", "1C").
 
-model(Name, Class, Manufactorer) :- string(Name), acClass(Class), apManufactorer(Manufactorer).
+model(Name, Class, Manufactorer) :- string(Name), string(Class), string(Manufactorer).
 model(cesna, light, "Textron Aviation").
 model("Airbus A380", heavy, "Airbus Industrie").
 
@@ -79,20 +78,20 @@ passenger(2, jens, aasgaard, "28-7-1990").
 passenger(3, grzegorz, komincz, "14-12-1993").
 passenger(4, patrick, brix, "4-12-1992").
 
-passport(Owner, Country) :- number(Owner), country(Country).
+passport(Owner, Country) :- number(Owner), string(Country).
 passport(1, germany).
 passport(2, england).
 passport(3, "Saudi Arabia").
 passport(4, denmark).
 passport(4, england).
 
-leg(Origin, Destination, Servicer, Aircraft) :- apCode(Origin), apCode(Destination), airline(Servicer), number(Aircraft).
+leg(Origin, Destination, Servicer, Aircraft) :- string(Origin), string(Destination), string(Servicer), number(Aircraft).
 leg(lon, aal, sas, 1).
 leg(aal, agb, sas, 2).
 leg(augs, ruh, norwegian, 1).
 leg(ruh, aal, norwegian, 2).
 
-reservation(Code, Passenger, Origin, Destination, Aircraft, SeatNumber) :- string(Code), number(Passenger), apCode(Origin), apCode(Destination), number(Aircraft), string(SeatNumber).
+reservation(Code, Passenger, Origin, Destination, Aircraft, SeatNumber) :- string(Code), number(Passenger), string(Origin), string(Destination), string(Aircraft), string(SeatNumber).
 reservation("R2D2", 1, aal, agb, 2, "1A").
 reservation("002", 2, aal, agb, 2, "1B").
 reservation("003", 4, aal, agb, 2, "1C").
@@ -106,14 +105,13 @@ itinerary(Code, ReservationCode) :- string(Code), string(ReservationCode).
 itinerary("010", "R2D2").
 itinerary("010", "BB8").
 
-visaAgreement(CountryA, CountryB) :- country(CountryA), country(CountryB).
+visaAgreement(CountryA, CountryB) :- string(CountryA), string(CountryB).
 visaAgreement(CountryA, CountryB) :- visaA(CountryA, CountryB).
 visaAgreement(CountryA, CountryB) :- visaA(CountryB, CountryA).
 visaA(denmark, germany).
 visaA(denmark, england).
 visaA(germany, england).
 visaA(england, "Saudi Arabia").
-
 
 
 %A passenger is allowed to fly into an airport if he or she holds a passport from
