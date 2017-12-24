@@ -120,11 +120,9 @@ visaA(england, "Saudi Arabia").
 % --- Problem 3. Compute the airports a passenger may fly into.
 
 mayFlyTo(PassengerId, AirportCode) :-
-        number(PassengerId), apCode(AirportCode),
         passport(PassengerId, Country),
         airport(AirportCode, Country, _).
 mayFlyTo(PassengerId, AirportCode) :-
-        number(PassengerId), apCode(AirportCode),
         passport(PassengerId, Origin),
         visaAgreement(Origin, Destination),
         airport(AirportCode, Destination, _).
@@ -135,9 +133,8 @@ mayFlyTo(PassengerId, AirportCode) :-
 % --- Problem 4. Compute the passengers that have illegal reservations.
 
 legalReservations(Pid, Rid, Dest) :- reservation(Rid, Pid, _, Dest, _, _), mayFlyTo(Pid, Dest).
-illegalReservations(Pid) :- reservation(Rid, Pid, _, Dest, _, _), not(legalReservations(Pid, Rid, Dest)).
-
-
+illegalReservations(Pid, Rid) :- reservation(Rid, Pid, _, Dest, _, _), not(legalReservations(Pid, Rid, Dest)).
+% illegalReservations(P, R). should return: P = 3, R = "IG88";
 
 %A double booking occurs when the same seat on the same leg of a flight is
 %reserved by two different passengers
