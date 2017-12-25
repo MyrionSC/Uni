@@ -56,18 +56,23 @@ airport(aal, denmark, clear).
 aircraft(Reg, Owner, Model) :- number(Reg), airline(Owner), string(Model).
 aircraft(1, sas, cesna).
 aircraft(2, norwegian, "Airbus A380").
-seat(Reg, SeatNumber, Class, Type) :- number(Reg), string(SeatNumber), string(Class), string(Type).
+
+seat(Aircraft, SeatNumber, Class, Type) :- number(Aircraft), string(SeatNumber), string(Class), string(Type).
 seat(1, "1A", economy, window).
-seat(1, "1B", economy, aisle).
+seat(1, "1B", economy, other).
+seat(1, "1C", economy, aisle).
 seat(2, "1A", business, window).
 seat(2, "1B", business, other).
-seat(2, "1C", business, aisle).
-adjacantSeat(Reg, Seat1, Seat2) :- number(Reg), string(Seat1), string(Seat2).
-adjacantSeat(Reg, Seat1, Seat2) :- aSeat(Reg, Seat1, Seat2).
-adjacantSeat(Reg, Seat1, Seat2) :- aSeat(Reg, Seat2, Seat1).
+seat(2, "1C", business, other).
+seat(2, "1D", business, aisle).
+adjacantSeat(Aircraft, Seat1, Seat2) :- number(Aircraft), string(Seat1), string(Seat2).
+adjacantSeat(Aircraft, Seat1, Seat2) :- aSeat(Aircraft, Seat1, Seat2).
+adjacantSeat(Aircraft, Seat1, Seat2) :- aSeat(Aircraft, Seat2, Seat1).
 aSeat(1, "1A", "1B").
+aSeat(1, "1B", "1C").
 aSeat(2, "1A", "1B").
 aSeat(2, "1B", "1C").
+aSeat(2, "1C", "1D").
 
 model(Name, Class, Manufactorer) :- string(Name), string(Class), string(Manufactorer).
 model(cesna, light, "Textron Aviation").
@@ -221,10 +226,7 @@ tflt(L) :- findLegs(aal, lon, L).
 % calculate if each leg has free seats
 freeSeats([]).
 freeSeats(Legs) :-
-        true.
-%freeSeats(Legs) :-
-%        [[Origin, Dest, _, _]|Tail] = Legs,
-
+        [[Origin, Dest, _, Aircraft]|Tail] = Legs.
 
 
 % passenger can enter each country
