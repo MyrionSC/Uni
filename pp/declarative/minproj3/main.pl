@@ -141,11 +141,11 @@ mayFlyTo(PassengerId, AirportCode) :-
 %A passenger may have a reservation which is illegal in the sense that he or
 %she is not permitted to enter the country of the destination airport.
 % --- Problem 4. Compute the passengers that have illegal reservations.
+% illegalReservations(P, R). should return: P = 3, R = "IG88";
 
 legalReservations(Pid, Rid, Dest) :- reservation(Rid, Pid, _, Dest, _, _), mayFlyTo(Pid, Dest).
 illegalReservations(Pid, Rid) :- reservation(Rid, Pid, _, Dest, _, _), not(legalReservations(Pid, Rid, Dest)).
 illegalReservations(Rid) :- reservation(Rid, Pid, _, Dest, _, _), not(legalReservations(Pid, Rid, Dest)).
-% illegalReservations(P, R). should return: P = 3, R = "IG88";
 
 %A double booking occurs when the same seat on the same leg of a flight is
 %reserved by two different passengers
@@ -161,21 +161,19 @@ doubleBookings(Rid) :-
 %bookings on it, the weather at the origin and destination is within limits, and
 %every passenger is allowed to travel to the destination country.
 % --- Problem 6. Compute the aircraft that are permitted to takeoff.
-
-%leg(Origin, Destination, Servicer, Aircraft) :- string(Origin), string(Destination), string(Servicer), number(Aircraft).
-% leg(lon, aal, sas, 1). % should fail
-% leg(aal, agb, sas, 2). % should succeed
+% legCleared(lon, aal, sas, 1). % should be false
+% legCleared(aal, agb, sas, 2). % should be true
 
 % no double bookings for leg
 bookingsNotDoubleOnLeg(Origin, Dest, Aircraft, Rid) :-
         reservation(Rid, _, Origin, Dest, Aircraft, _),
         not(doubleBookings(Rid)).
 noDoubleBookingsForLeg(Origin, Dest, Aircraft) :-
-        findall(_, reservation(Rid, _, Origin, Dest, Aircraft, _), ResLegList),
+        setof(_, reservation(Rid, _, Origin, Dest, Aircraft, _), ResLegList),
         length(ResLegList, ResLegLen),
-        findall(_, bookingsNotDoubleOnLeg(Origin, Dest, Aircraft, Rid), NoDoubleList),
+        setof(_, bookingsNotDoubleOnLeg(Origin, Dest, Aircraft, Rid), NoDoubleList),
         length(NoDoubleList, NoDoubleLen),
-        ResLegLen = NoDoubleLen.
+        ResLegLen = NoDoubleLen, !.
 
 % canFly
 takeOffConditions(Origin, Dest, Aircraft) :-
@@ -189,11 +187,11 @@ takeOffConditions(Origin, Dest, Aircraft) :-
 % no illegal passengers on flight
 legalReservationsForLeg(Origin, Dest, Aircraft, Rid) :- reservation(Rid, Pid, Origin, Dest, Aircraft, _), mayFlyTo(Pid, Dest).
 noIllegalReservationsForLeg(Origin, Dest, Aircraft) :-
-        findall(_, reservation(_, _, Origin, Dest, Aircraft, _), ResLegList),
+        setof(_, reservation(Rid, _, Origin, Dest, Aircraft, _), ResLegList),
         length(ResLegList, ResLegLen),
-        setof(Rid, legalReservationsForLeg(Origin, Dest, Aircraft, Rid), LegalResList),
+        setof(_, legalReservationsForLeg(Origin, Dest, Aircraft, Rid), LegalResList),
         length(LegalResList, LegalResLen),
-        ResLegLen = LegalResLen.
+        ResLegLen = LegalResLen, !.
 
 legCleared(Origin, Dest, Servicer, Aircraft) :-
         leg(Origin, Dest, Servicer, Aircraft), % does leg exist
@@ -201,11 +199,15 @@ legCleared(Origin, Dest, Servicer, Aircraft) :-
         takeOffConditions(Origin, Dest, Aircraft),
         noIllegalReservationsForLeg(Origin, Dest, Aircraft).
 
+
 %A passenger can book a flight, i.e. create an itinerary, from one airport to
 %another airport if they are connected by one or more legs, if on each leg there
 %is a seat which is not reserved, and the passenger is permitted to enter each
 %country on the way.
 % --- Problem 7. Compute if a passenger can book a flight from one airport to another.
+
+
+
 %• As above, but each leg must be on the same airline.
 %• As above, but each leg must be on a Boeing aircraft.
 %• As above, but each leg must be with a window seat.
