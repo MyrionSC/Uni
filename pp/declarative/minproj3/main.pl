@@ -103,6 +103,7 @@ reservation(Code, Passenger, Origin, Destination, Aircraft, SeatNumber) :- strin
 reservation("R2D2", 1, aal, agb, 2, "1A").
 reservation("002", 2, aal, agb, 2, "1B").
 reservation("003", 4, aal, agb, 2, "1C").
+%reservation("005", 4, aal, agb, 2, "1D").
 reservation("C3PO", 2, lon, aal, 1, "1A"). % double reservation
 reservation("IG88", 3, lon, aal, 1, "1A"). % double reservation % illegal reservation
 reservation("001", 1, lon, aal, 1, "1B").
@@ -223,11 +224,16 @@ findLegs(Origin, Dest, Legs) :-
         append([[Origin, OtherDest, Servicer, Aircraft]], Res, Legs).
 tflt(L) :- findLegs(aal, lon, L).
 
-% calculate if each leg has free seats
-freeSeats([]).
-freeSeats(Legs) :-
-        [[Origin, Dest, _, Aircraft]|Tail] = Legs.
-
+% calculate if each leg has free seats. As a bonus, add them to list corresponding to legs
+freeSeats([], []).
+freeSeats(Legs, SeatOut) :-
+        [[Origin, Dest, _, Aircraft]|Tail] = Legs,
+        seat(Aircraft, Seat, _, _),
+        findall(Seat, \+((reservation(_, _, Origin, Dest, Aircraft, ReservedSeat), ReservedSeat = Seat)), ValidSeats),
+        length(ValidSeats, ValidSeatsLen),
+        ValidSeatsLen > 0,
+        freeSeats(Tail, Res),
+        append(ValidSeats, Res, SeatOut).
 
 % passenger can enter each country
 canEnterCountries(_, []).
@@ -238,16 +244,13 @@ canEnterCountries(Pid, Legs) :-
         canEnterCountries(Pid, Tail).
 
 % passenger can book flight
-canBook(Pid, Origin, Dest) :-
+canBook(Pid, Origin, Dest, Legs, Seats) :-
         findLegs(Origin, Dest, Legs),
-        freeSeats(Legs),
+        freeSeats(Legs, Seats),
         canEnterCountries(Pid, Legs).
 
-canBookTest :- canBook(4, aal, lon).
-
-
-
-
+canBookTest :- canBook(4, aal, lon, _, _).
+canBookTest(Legs, Seats) :- canBook(4, aal, lon, Legs, Seats).
 
 %• As above, but each leg must be on the same airline.
 %• As above, but each leg must be on a Boeing aircraft.
