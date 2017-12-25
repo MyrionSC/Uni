@@ -51,6 +51,7 @@ canFly(heavy, clear).
 canFly(heavy, cloudy).
 canFly(heavy, stormy).
 
+
 % --- Problem 2. Introduce facts for your choosen predicates.
 
 airport(Code, Country, Weather) :- string(Code), country(Country), weather(Weather).
@@ -107,6 +108,8 @@ reservation("C3PO", 2, lon, aal, 1, "1A"). % double reservation
 reservation("IG88", 3, lon, aal, 1, "1A"). % double reservation % illegal reservation
 reservation("001", 1, lon, aal, 1, "1B").
 %reservation("BB9E", 4, aal, ruh, 2, "1B").
+reservation("004", 3, lon, ruh, 2, "1A").
+
 
 itinerary(Code, ReservationCode) :- string(Code), string(ReservationCode).
 itinerary("010", "R2D2").
@@ -141,6 +144,7 @@ mayFlyTo(PassengerId, AirportCode) :-
 
 legalReservations(Pid, Rid, Dest) :- reservation(Rid, Pid, _, Dest, _, _), mayFlyTo(Pid, Dest).
 illegalReservations(Pid, Rid) :- reservation(Rid, Pid, _, Dest, _, _), not(legalReservations(Pid, Rid, Dest)).
+illegalReservations(Rid) :- reservation(Rid, Pid, _, Dest, _, _), not(legalReservations(Pid, Rid, Dest)).
 % illegalReservations(P, R). should return: P = 3, R = "IG88";
 
 %A double booking occurs when the same seat on the same leg of a flight is
@@ -180,17 +184,22 @@ takeOffConditions(Origin, Dest, Aircraft) :-
         airport(Origin, _, OriginWeather),
         airport(Dest, _, DestWeather),
         canFly(Class, OriginWeather),
-        canFly(Class, DestWeather).
-
+        canFly(Class, DestWeather), !.
 
 % no illegal passengers on flight
+legalReservationsForLeg(Origin, Dest, Aircraft, Rid) :- reservation(Rid, Pid, Origin, Dest, Aircraft, _), mayFlyTo(Pid, Dest).
+noIllegalReservationsForLeg(Origin, Dest, Aircraft) :-
+        findall(_, reservation(_, _, Origin, Dest, Aircraft, _), ResLegList),
+        length(ResLegList, ResLegLen),
+        setof(Rid, legalReservationsForLeg(Origin, Dest, Aircraft, Rid), LegalResList),
+        length(LegalResList, LegalResLen),
+        ResLegLen = LegalResLen.
 
 legCleared(Origin, Dest, Servicer, Aircraft) :-
         leg(Origin, Dest, Servicer, Aircraft), % does leg exist
-        noDoubleBookingsForLeg(Origin, Dest, Aircraft).
-
-
-
+        noDoubleBookingsForLeg(Origin, Dest, Aircraft),
+        takeOffConditions(Origin, Dest, Aircraft),
+        noIllegalReservationsForLeg(Origin, Dest, Aircraft).
 
 %A passenger can book a flight, i.e. create an itinerary, from one airport to
 %another airport if they are connected by one or more legs, if on each leg there
