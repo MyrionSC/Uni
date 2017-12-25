@@ -44,13 +44,6 @@ weather(cloudy). % light and heavy can fly
 weather(stormy). % heavy can fly
 weather(thunderstorm). % non can fly
 
-canFly(Model, Weather) :- apModel(Model), weather(Weather).
-canFly(light, clear).
-canFly(light, cloudy).
-canFly(heavy, clear).
-canFly(heavy, cloudy).
-canFly(heavy, stormy).
-
 
 % --- Problem 2. Introduce facts for your choosen predicates.
 
@@ -93,21 +86,20 @@ passport(3, "Saudi Arabia").
 passport(4, denmark).
 passport(4, england).
 
-leg(Origin, Destination, Servicer, Aircraft) :- string(Origin), string(Destination), string(Servicer), number(Aircraft).
+leg(Origin, Destination, Servicer, Aircraft) :- apCode(Origin), apCode(Destination), string(Servicer), number(Aircraft).
 leg(lon, aal, sas, 1).
 leg(aal, agb, sas, 2).
-leg(augs, ruh, norwegian, 1).
+leg(agb, lon, norwegian, 2).
+leg(agb, ruh, norwegian, 1).
 leg(ruh, aal, norwegian, 2).
 
 reservation(Code, Passenger, Origin, Destination, Aircraft, SeatNumber) :- string(Code), number(Passenger), string(Origin), string(Destination), string(Aircraft), string(SeatNumber).
 reservation("R2D2", 1, aal, agb, 2, "1A").
 reservation("002", 2, aal, agb, 2, "1B").
 reservation("003", 4, aal, agb, 2, "1C").
-%reservation("BB8", 1, agb, lon, 1, "1A").
 reservation("C3PO", 2, lon, aal, 1, "1A"). % double reservation
 reservation("IG88", 3, lon, aal, 1, "1A"). % double reservation % illegal reservation
 reservation("001", 1, lon, aal, 1, "1B").
-%reservation("BB9E", 4, aal, ruh, 2, "1B").
 reservation("004", 3, lon, ruh, 2, "1A").
 
 
@@ -122,6 +114,13 @@ visaA(denmark, germany).
 visaA(denmark, england).
 visaA(germany, england).
 visaA(england, "Saudi Arabia").
+
+canFly(Model, Weather) :- apModel(Model), weather(Weather).
+canFly(light, clear).
+canFly(light, cloudy).
+canFly(heavy, clear).
+canFly(heavy, cloudy).
+canFly(heavy, stormy).
 
 
 %A passenger is allowed to fly into an airport if he or she holds a passport from
@@ -193,6 +192,7 @@ noIllegalReservationsForLeg(Origin, Dest, Aircraft) :-
         length(LegalResList, LegalResLen),
         ResLegLen = LegalResLen, !.
 
+% leg cleared for takeoff
 legCleared(Origin, Dest, Servicer, Aircraft) :-
         leg(Origin, Dest, Servicer, Aircraft), % does leg exist
         noDoubleBookingsForLeg(Origin, Dest, Aircraft),
@@ -205,6 +205,32 @@ legCleared(Origin, Dest, Servicer, Aircraft) :-
 %is a seat which is not reserved, and the passenger is permitted to enter each
 %country on the way.
 % --- Problem 7. Compute if a passenger can book a flight from one airport to another.
+
+% find legs connecting airports
+findLegs(Origin, Dest, Legs) :-
+        leg(Origin, Dest, Servicer, Aircraft),
+        append([], [[Origin, Dest, Servicer, Aircraft]], Legs).
+findLegs(Origin, Dest, Legs) :-
+        not(leg(Origin, Dest, Servicer, Aircraft)),
+        leg(Origin, OtherDest, Servicer, Aircraft),
+        findLegs(OtherDest, Dest, Res),
+        append([[Origin, OtherDest, Servicer, Aircraft]], Res, Legs).
+tflt(L) :- findLegs(aal, lon, L).
+
+% each leg has free seat
+%freeSeats(Origin, Dest, Legs) :-
+
+
+% passenger can enter each country
+
+
+% passenger can book flight
+canBook(Pid, Origin, Dest, A) :-
+        findLegs(Origin, Dest, Legs).
+
+canBookTest(R) :- canBook(4, aal, lon, R).
+
+
 
 
 
