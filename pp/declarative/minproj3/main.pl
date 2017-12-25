@@ -88,6 +88,7 @@ passport(4, england).
 
 leg(Origin, Destination, Servicer, Aircraft) :- apCode(Origin), apCode(Destination), string(Servicer), number(Aircraft).
 leg(lon, aal, sas, 1).
+leg(lon, ruh, sas, 2).
 leg(aal, agb, sas, 2).
 leg(agb, lon, norwegian, 2).
 leg(agb, ruh, norwegian, 1).
@@ -217,18 +218,30 @@ findLegs(Origin, Dest, Legs) :-
         append([[Origin, OtherDest, Servicer, Aircraft]], Res, Legs).
 tflt(L) :- findLegs(aal, lon, L).
 
-% each leg has free seat
-%freeSeats(Origin, Dest, Legs) :-
+% calculate if each leg has free seats
+freeSeats([]).
+freeSeats(Legs) :-
+        true.
+%freeSeats(Legs) :-
+%        [[Origin, Dest, _, _]|Tail] = Legs,
+
 
 
 % passenger can enter each country
-
+canEnterCountries(_, []).
+canEnterCountries(Pid, Legs) :-
+        [[Origin, Dest, _, _]|Tail] = Legs,
+        mayFlyTo(Pid, Origin),
+        mayFlyTo(Pid, Dest),
+        canEnterCountries(Pid, Tail).
 
 % passenger can book flight
-canBook(Pid, Origin, Dest, A) :-
-        findLegs(Origin, Dest, Legs).
+canBook(Pid, Origin, Dest) :-
+        findLegs(Origin, Dest, Legs),
+        freeSeats(Legs),
+        canEnterCountries(Pid, Legs).
 
-canBookTest(R) :- canBook(4, aal, lon, R).
+canBookTest :- canBook(4, aal, lon).
 
 
 
