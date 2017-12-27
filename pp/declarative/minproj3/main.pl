@@ -103,7 +103,6 @@ reservation(Code, Passenger, Origin, Destination, Aircraft, SeatNumber) :- strin
 reservation("R2D2", 1, aal, agb, 2, "1A").
 reservation("002", 2, aal, agb, 2, "1B").
 reservation("003", 4, aal, agb, 2, "1C").
-%reservation("005", 4, aal, agb, 2, "1D").
 reservation("C3PO", 2, lon, aal, 1, "1A"). % double reservation
 reservation("IG88", 3, lon, aal, 1, "1A"). % double reservation % illegal reservation
 reservation("001", 1, lon, aal, 1, "1B").
@@ -135,6 +134,12 @@ canFly(heavy, stormy).
 %the country of the passport holder and the country of the airport.
 % --- Problem 3. Compute the airports a passenger may fly into.
 
+%?- mayFlyTo(P, A).
+%P = 1,
+%A = agb ;
+%P = 2,
+%A = lon ; etc.
+
 mayFlyTo(PassengerId, AirportCode) :-
         passport(PassengerId, Country),
         airport(AirportCode, Country, _).
@@ -156,6 +161,10 @@ illegalReservations(Rid) :- reservation(Rid, Pid, _, Dest, _, _), not(legalReser
 %A double booking occurs when the same seat on the same leg of a flight is
 %reserved by two different passengers
 % --- Problem 5. Compute the booking code of all double bookings.
+%?- doubleBookings(R).
+%R = "C3PO" ;
+%R = "IG88" ;
+
 
 doubleBookings(Rid) :-
         reservation(Rid, _, Origin, Destination, Aircraft, SeatNumber),
@@ -213,6 +222,15 @@ legCleared(Origin, Dest, Servicer, Aircraft) :-
 %country on the way.
 % --- Problem 7. Compute if a passenger can book a flight from one airport to another.
 
+% failure test: returns false because passenger 3 cannot enter denmark or germany (Saudi Arabia has no visa agreement with these)
+%      canBook(3, aal, lon, Reservations).
+% succesful test: returns list of reservations that can be made
+%      canBook(4, aal, lon, Reservations).
+%      returns: Reservations = [[aal, agb, 2, "1D"], [agb, lon, 2, "1A"]];
+%               Reservations = [[aal, agb, 2, "1D"], [agb, lon, 2, "1B"]];
+%               Reservations = [[aal, agb, 2, "1D"], [agb, lon, 2, "1C"]];
+%               Reservations = [[aal, agb, 2, "1D"], [agb, lon, 2, "1D"]]
+
 % find legs connecting airports
 findLegs(Origin, Dest, Legs) :-
         leg(Origin, Dest, Servicer, Aircraft),
@@ -222,7 +240,6 @@ findLegs(Origin, Dest, Legs) :-
         leg(Origin, OtherDest, Servicer, Aircraft),
         findLegs(OtherDest, Dest, Res),
         append([[Origin, OtherDest, Servicer, Aircraft]], Res, Legs).
-tflt(L) :- findLegs(aal, lon, L).
 
 % calculate if each leg has free seats. As a bonus, add them to list corresponding to legs
 freeSeats([], []).
@@ -243,29 +260,85 @@ canEnterCountries(Pid, Legs) :-
         mayFlyTo(Pid, Dest),
         canEnterCountries(Pid, Tail).
 
+reservationsPossible([], [], []).
+reservationsPossible(Legs, Seats, ReservationsOut) :-
+        [[Origin, Dest, _, Aircraft]|LegTail] = Legs,
+        [Seat|SeatTail] = Seats,
+        reservationsPossible(LegTail, SeatTail, Reservations),
+        append([[Origin, Dest, Aircraft, Seat]], Reservations, ReservationsOut).
+
 % passenger can book flight
-canBook(Pid, Origin, Dest, Legs, Seats) :-
+canBook(Pid, Origin, Dest, Reservations) :-
         findLegs(Origin, Dest, Legs),
         freeSeats(Legs, Seats),
-        canEnterCountries(Pid, Legs).
+        canEnterCountries(Pid, Legs),
+        reservationsPossible(Legs, Seats, Reservations).
 
 canBookTest :- canBook(4, aal, lon, _, _).
-canBookTest(Legs, Seats) :- canBook(4, aal, lon, Legs, Seats).
-
-%• As above, but each leg must be on the same airline.
-%• As above, but each leg must be on a Boeing aircraft.
-%• As above, but each leg must be with a window seat.
+canBookTest(Reservations) :- canBook(4, aal, lon, Reservations).
 
 
+%--- As above, but each leg must be on the same airline.
+% failure test: returns false because the there is no route from aal to ruh with aircrafts of the same owner
+%      canBookSameAirline(4, aal, ruh, Reservations).
+% succesful test: Success because aircraft 2, which is used in both legs, is owned by sas
+%      canBookSameAirline(4, aal, lon, Reservations).
+%      returns: Reservations = [[aal, agb, 2, "1D"], [agb, lon, 2, "1A"]] etc.
+
+sameAirline([], _).
+sameAirline(Reservations) :-
+        [[_, _, Aircraft, _]|Tail] = Reservations,
+        aircraft(Aircraft, Owner, _),
+        sameAirline(Tail, Owner).
+sameAirline(Reservations, PrevOwner) :-
+        [[_, _, Aircraft, _]|Tail] = Reservations,
+        aircraft(Aircraft, Owner, _),
+        PrevOwner == Owner,
+        sameAirline(Tail, Owner).
+canBookSameAirline(Pid, Origin, Dest, Reservations) :-
+        canBook(Pid, Origin, Dest, Reservations),
+        sameAirline(Reservations).
+
+
+%--- As above, but each leg must be on a Boeing aircraft.
+% failure test: returns false because non of the aircraft are boeing manufactured
+%      %      canBookWithManufacturer(4, aal, lon, boeing, Reservations).
+% succesful test: success because aircraft 2, which is used in both legs, is "Airbus Industrie" made
+%      canBookWithManufacturer(4, aal, lon, "Airbus Industrie", Reservations).
+%      returns: Reservations = [[aal, agb, 2, "1D"], [agb, lon, 2, "1A"]];
+%               Reservations = [[aal, agb, 2, "1D"], [agb, lon, 2, "1B"]] etc.
+
+withManufacturer([], _).
+withManufacturer(Reservations, PrevManufacturer) :-
+        [[_, _, Aircraft, _]|Tail] = Reservations,
+        aircraft(Aircraft, _, Model),
+        model(Model, _, Manufacturer),
+        PrevManufacturer == Manufacturer,
+        withManufacturer(Tail, Manufacturer).
+canBookWithManufacturer(Pid, Origin, Dest, Manufacturer, Reservations) :-
+        canBook(Pid, Origin, Dest, Reservations),
+        withManufacturer(Reservations, Manufacturer).
+
+
+%--- As above, but each leg must be with a window seat.
+% failure test: returns false because only seat "1D", which is not a window seat, is free on first leg
+%      canBookWithWindowSeat(4, aal, lon, Reservations).
+% succesful test: success because "1A" is a window seat
+%      canBookWithWindowSeat(4, agb, lon, Reservations).
+%      returns: Reservations = [[agb, lon, 2, "1A"]]
+
+withWindowSeat([]).
+withWindowSeat(Reservations) :-
+        [[_, _, Aircraft, Seat]|Tail] = Reservations,
+        seat(Aircraft, Seat, _, window),
+        withWindowSeat(Tail).
+canBookWithWindowSeat(Pid, Origin, Dest, Reservations) :-
+        canBook(Pid, Origin, Dest, Reservations),
+        withWindowSeat(Reservations).
 
 % --- Problem 8. (Optional, you do not have to solve this problem to receive full credit.)
 %Compute if two passengers can book a flight from one airport to another airport. The
 %two passengers must travel on business class, have adjacent seats, and one of the seats
 %must be a window seat.
 
-
-
-
-%\+((treeHeight(T, Y), Y > X))
-
-
+problem8NotImplemented.
