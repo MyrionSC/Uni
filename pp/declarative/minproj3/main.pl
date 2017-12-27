@@ -1,3 +1,6 @@
+%Author: Martin Raunkjær Andersen
+%AAU study number: 20136030
+%AAU email adress: marand13@student.aau.dk
 
 % --- Problem 1. Introduce appropriate predicates for the entities in the system.
 
