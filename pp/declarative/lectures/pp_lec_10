@@ -1,0 +1,100 @@
+problem 1:
+    model-theoretic semantics:
+        an interpretation of a set of facts (constants)
+        the solution is a "model" (an interpretation) that satisfies all constrains
+        The minimal model is the best model
+    
+    Herbrandt universe (U) of P: Set of all constants in the program P
+    Herbrandt Base (B) of P: set of all ground atoms
+
+
+
+problem 2:
+
+    P:
+    Fruit(Apple, Green).
+    Fruit(Banana, Yellow).
+    Fruit(Strawberry, Red).
+    Vegetable(Tomato, Red).
+
+    2.1: U = { Apple, Banana, Strawberry, Tomato, Green, Yellow, Red, Red }
+    2.2: B = { Fruit(x, y) or Vegetable(x, y) | x ∈ U, y ∈ U }
+    An interpretation of P is any combination of the Berbrand Base
+
+
+problem 3:
+
+    P =
+    Loves(Rose, Jack).
+    Loves(Jack, Rose).
+    Loves(Caledon, Rose).
+    Happy(x) ⇐ Loves(x, y), Loves(y, x).
+    
+    B(P) = Herbrand base of P
+    All I = powerset(B(P))
+
+problem 4:
+
+
+I = Loves(Rose, Jack), Loves(Caledon, Caledon), Happy(Rose)
+
+which of the following ground atoms and rules are true under the interpretation:
+• Loves(Rose, Jack)? T
+• Loves(Jack, Rose)? F
+• Happy(Rose)? T
+• Happy(Jack)? F
+• Happy(Caledon)? F
+• Happy(Caledon) ⇐ Loves(Caledon, Caledon), Loves(Caledon, Caledon)? F
+• Happy(Rose) ⇐ Loves(Rose, Jack), Loves(Jack, Rose)? F
+
+problem 5:
+
+I1 = Loves(Rose, Jack) F
+
+I2 = Loves(Rose, Jack), Loves(Jack, Rose), Loves(Caledon, Rose) F
+
+I3 = Loves(Rose, Jack), Loves(Jack, Rose), Loves(Caledon, Rose), Happy(Rose) F
+
+I4 = Loves(Rose, Jack), Loves(Jack, Rose), Loves(Caledon, Rose), Happy(Rose), Happy(Jack) T
+
+I5 = Loves(Rose, Jack), Loves(Jack, Rose), Loves(Caledon, Rose), Happy(Rose), Happy(Jack), Happy(Caledon) F
+
+problem 6:
+
+God(Odin).
+Son(Odin, Thor).
+Son(Odin, Baldr).
+Son(Thor, Mothi).
+Son(Thor, Magni).
+DemiGod(x) ⇐ Son(y, x), God(y).
+Mortal(x) ⇐ Son(y, x), DemiGod(y).
+
+ite_1 = { God(Odin), Son(Odin, Thor), Son(Odin, Baldr), Son(Thor, Mothi), Son(Thor, Magni) }
+ite_2 = { DemiGod(Thor), DemiGod(Baldr) }
+ite_3 = { Mortal(Mothi), Mortal(Magni) }
+
+problem 7:
+
+                                Mortal(Magni)
+           Son(Thor, Magni)                             Demigod(Thor)
+                                            Son(Odin, Thor)             God(Odin)
+
+problem 8:
+
+see opg8.jpg
+
+There are no cycles so not stratified
+
+problem 9
+
+see opg9.jpg
+
+There is a cycle A -> D !-> E -> A, and D -> E is negative so it is not stratified
+
+
+
+
+
+
+
+
