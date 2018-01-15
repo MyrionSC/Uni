@@ -28,12 +28,29 @@ namespace assignment3
             // 2: Find nearest neighbors to user
             // 3: combine ratings of neighbors to predict ratings
 
-//            HashSet<int> neighbors = findNeigbors(1, usersCount);
+            HashSet<int> nearestNeighbors = findNearestNeigbors(1, usersCount);
+            Console.WriteLine(PredictRank(1, 33, nearestNeighbors));
+            
+            double curmax = 0;
+            int highestRank = 0;
+            for (int i = 1; i < itemsCount; i++)
+            {
+                double rankPredicted = PredictRank(1, i, nearestNeighbors);
+                Console.WriteLine(i + ": " + rankPredicted);
+                if (curmax < rankPredicted)
+                {
+                    curmax = rankPredicted;
+                    highestRank = i;
+                }
+            }
+            Console.WriteLine();
+            Console.WriteLine(curmax);
+            Console.WriteLine(highestRank);
+            
 
 
 
-
-            Console.WriteLine(userSimilarity(1, 1));
+//            Console.WriteLine(userSimilarity(1, 1));
 
 //            double curmax = 0;
 //            int mostSim = 0;
@@ -55,7 +72,7 @@ namespace assignment3
 
         }
 
-        public static HashSet<int> findNeigbors(int user, int usersCount)
+        public static HashSet<int> findNearestNeigbors(int user, int usersCount)
         {
             HashSet<int> neighbors = new HashSet<int>();
             for (int i = 1; i < usersCount; i++)
@@ -63,7 +80,7 @@ namespace assignment3
                 if (i == user) continue;
                 
                 var sim = userSimilarity(1, i);
-                if (sim > 0.5)
+                if (sim > 0.7)
                 {
                     neighbors.Add(i);
                 }
@@ -71,23 +88,33 @@ namespace assignment3
             return neighbors;
         }
 
-        public static double pred(int user, int item)
+        public static double PredictRank(int user, int item, HashSet<int> neighbors)
         {
 //            1. Calculate, whether the neighbors' ratings for the unseen item 𝑝 are higher or lower than their average
 //            2. Combine the rating differences – weighted by importance of neighbor
 //            3. Add/subtract the neighbors' bias from the active user's average and use this as a prediction
+            double neighborSimilaritySum = 0;
+            foreach (int neighbor in neighbors)
+            {
+                neighborSimilaritySum += userSimilarity(user, neighbor);
+            }
             
+
+            double userAverage = averageRating(user);
+            double sumWeightedNeighborRatings = 0;
+            foreach (int neighbor in neighbors)
+            {
+                sumWeightedNeighborRatings += weightOfNeighbor(user, neighbor, neighbors, neighborSimilaritySum) *
+                                              (userRatingForItem(neighbor, item) - averageRating(neighbor));
+            }
             
-            return 1;
+            return userAverage + sumWeightedNeighborRatings;
         }
 
-        public static double weightOfNeighbor(int user, int neighbor)
+        public static double weightOfNeighbor(int userA, int userB, HashSet<int> neighbors, double neighborSimilaritySum)
         {
             //𝒘 (𝒂, 𝒃) = 𝒔𝒊𝒎(𝒂, 𝒃) / sum 𝒃∈𝑵 (𝒔𝒊𝒎(𝒂, 𝒃))
-//            var res = userSimilarity(user, neighbor) / userMatrix.
-            
-
-            return 1;
+            return userSimilarity(userA, userB) / neighborSimilaritySum;
         }
 
         public static double userSimilarity(int userA, int userB) // pearson correlation

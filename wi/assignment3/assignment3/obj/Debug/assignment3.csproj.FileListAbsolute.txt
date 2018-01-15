@@ -1,0 +1,7 @@
+C:\Users\Martin\code\Uni\wi\assignment3\assignment3\obj\Debug\assignment3.csprojResolveAssemblyReference.cache
+C:\Users\Martin\code\Uni\wi\assignment3\assignment3\obj\Debug\assignment3.exe
+C:\Users\Martin\code\Uni\wi\assignment3\assignment3\obj\Debug\assignment3.pdb
+C:\Users\Martin\code\Uni\wi\assignment3\assignment3\bin\Debug\assignment3.exe
+C:\Users\Martin\code\Uni\wi\assignment3\assignment3\bin\Debug\assignment3.pdb
+C:\Users\Martin\code\Uni\wi\assignment3\assignment3\bin\Debug\MathNet.Numerics.dll
+C:\Users\Martin\code\Uni\wi\assignment3\assignment3\bin\Debug\MathNet.Numerics.xml

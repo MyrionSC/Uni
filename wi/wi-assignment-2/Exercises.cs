@@ -93,7 +93,7 @@ namespace wi_assignment_2
             for (int i = 0; i < wordsArray.Length; i++)
             {
                 double containCount = 0, posCount = 0;
-                var word = wordsArray[i];
+                Utils.Pair<string, double> word = wordsArray[i];
                 for (int j = 0; j < reviews.Length; j++)
                 {
                     var review = reviews[j];
@@ -111,7 +111,7 @@ namespace wi_assignment_2
             
             string content = "good amazing this is";
             Console.WriteLine(content);
-            Console.WriteLine(Review.probPos(content, reviews, wordsArray));
+            Console.WriteLine(Review.contentPositiveProbability(content, reviews, wordsArray));
         }
         
         private class Review
@@ -130,7 +130,8 @@ namespace wi_assignment_2
                 return Positive + ": " + Content;
             }
 
-            static public double probPos(string content, Review[] reviews, Utils.Pair<string, double>[] words)
+            static public double contentPositiveProbability(string content, Review[] reviews,
+                Utils.Pair<string, double>[] words)
             {
                 // N = number of reviews
                 // P(Review|pos) = P(word1|pos)*P(word2|pos)*...*P(wordn|pos)*P(pos)
@@ -145,8 +146,11 @@ namespace wi_assignment_2
 
                 double NPos = reviews.Count(r => r.Positive);
                 double N = reviews.Length;
-                double PofPos = NPos / N;
-                wordProbs = wordProbs * PofPos;
+                double probabilityPositive = NPos / N;
+                wordProbs = wordProbs * probabilityPositive;
+                
+                // todo: find pos of neg and normalize both 
+                // probPos = word
 
                 return wordProbs;
             }

@@ -16,11 +16,11 @@ namespace wi_assignment_2
             DateTime startTime = DateTime.Now;
             
 //            List<User> users = Parser.ParseUsers("friendships.reviews.txt");
-            // With the current spectral cut algorithm, it only makes sense to cut twice. The rest of the cuts only a few people are shaven of a community each cut
+//            // With the current spectral cut algorithm, it only makes sense to cut twice. The rest of the cuts only a few people are shaven of a community each cut
 //            List<List<User>> communities = Parser.ParseCommunitites(users, 2);
-
+//
 //            Utils.PrintCommunities(communities);
-//            Exercises.Exercise2();
+            Exercises.Exercise2();
             
             Console.WriteLine();
             Console.WriteLine("-------------------------------");
