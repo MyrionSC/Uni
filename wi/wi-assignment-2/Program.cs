@@ -45,19 +45,6 @@ namespace wi_assignment_2
         {
             List<User> users = Parser.ParseUsers("friendships.reviews.txt");
 
-//            List<User> users = new List<User>
-//            {
-//                new User("per", new HashSet<string>(){"asger", "mads"},null,null),
-//                new User("asger", new HashSet<string>(){"per", "mads"},null,null),
-//                new User("mads", new HashSet<string>(){"per", "asger", "anne", "marie"},null,null),
-//                new User("anne", new HashSet<string>(){"mads", "marie", "søren", "katja"},null,null),
-//                new User("marie", new HashSet<string>(){"mads", "anne", "søren", "katja"},null,null),
-//                new User("søren", new HashSet<string>(){"anne", "marie", "katja", "simon"},null,null),
-//                new User("katja", new HashSet<string>(){"anne", "marie", "søren", "simon"},null,null),
-//                new User("simon", new HashSet<string>(){"søren", "katja", "morten"},null,null),
-//                new User("morten", new HashSet<string>(){"simon"},null,null),
-//            };
-            
             Console.WriteLine("number of users: " + users.Count);
             
             DenseMatrix userAdjMatrix = Utils.ConstructAdjMatrix(users);
@@ -65,7 +52,7 @@ namespace wi_assignment_2
             
             // compute unnormalized laplacion L
             DenseMatrix laplacianMatrix = userDegMatrix - userAdjMatrix;
-            Evd<double> m = laplacianMatrix.Evd();
+            Evd<double> m = laplacianMatrix.Evd(); // matrix decomposition
             
             // compute second eigenvector of L
             DenseVector secondEigenvector = DenseVector.OfArray(m.EigenVectors.ToColumnArrays()[1]);

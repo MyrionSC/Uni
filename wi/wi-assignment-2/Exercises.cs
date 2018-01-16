@@ -52,13 +52,13 @@ namespace wi_assignment_2
 
         public static void Exercise2()
         {
-            Utils.Pair<string, double>[] wordsArray =
+            Utils.Pair<string, double>[] vocabulary =
             {
                 new Utils.Pair<string, double>("good", 0),
                 new Utils.Pair<string, double>("I", 0),
                 new Utils.Pair<string, double>("like", 0),
                 new Utils.Pair<string, double>("this", 0),
-                new Utils.Pair<string, double>("shit", 0),
+                new Utils.Pair<string, double>("drivel", 0),
                 new Utils.Pair<string, double>("amazing", 0),
                 new Utils.Pair<string, double>("awesome", 0),
                 new Utils.Pair<string, double>("horrible", 0),
@@ -70,7 +70,7 @@ namespace wi_assignment_2
                 new Review(true, "this is good"),
                 new Review(false, "this is bad"),
                 new Review(true, "this is amazing"),
-                new Review(false, "this is shit"),
+                new Review(false, "this is drivel"),
                 new Review(true, "this is awesome"),
                 new Review(false, "this is horrible"),
                 new Review(true, "I like this"),
@@ -83,17 +83,17 @@ namespace wi_assignment_2
                 new Review(true, "this good"),
                 new Review(true, "is good"),
                 new Review(false, "is bad"),
-                new Review(false, "is shit"),
+                new Review(false, "is drivel"),
                 new Review(false, "is horrible"),
                 new Review(true, "is awesome"),
                 new Review(true, "is amazing"),
-                new Review(false, "this is bad shit"),
+                new Review(false, "this is drivel"),
             };
             
-            for (int i = 0; i < wordsArray.Length; i++)
+            for (int i = 0; i < vocabulary.Length; i++)
             {
                 double containCount = 0, posCount = 0;
-                Utils.Pair<string, double> word = wordsArray[i];
+                Utils.Pair<string, double> word = vocabulary[i];
                 for (int j = 0; j < reviews.Length; j++)
                 {
                     var review = reviews[j];
@@ -109,10 +109,12 @@ namespace wi_assignment_2
                 word.Second = posCount / containCount;
             }
             
-            string content = "good amazing this is";
-            Console.WriteLine(content);
-            Console.WriteLine(Review.contentPositiveProbability(content, reviews, wordsArray));
+            string test1 = "good amazing this is";
+            string test2 = "amazing horrible drivel";
+            Console.WriteLine(test1 + ": " + Review.contentPositiveProbability(test1, reviews, vocabulary));
+            Console.WriteLine(test2 + ": " + Review.contentPositiveProbability(test2, reviews, vocabulary));
         }
+        
         
         private class Review
         {
@@ -125,34 +127,43 @@ namespace wi_assignment_2
                 Content = content;
             }
 
-            public override string ToString()
-            {
-                return Positive + ": " + Content;
-            }
-
             static public double contentPositiveProbability(string content, Review[] reviews,
-                Utils.Pair<string, double>[] words)
+                Utils.Pair<string, double>[] vocabulary)
             {
                 // N = number of reviews
-                // P(Review|pos) = P(word1|pos)*P(word2|pos)*...*P(wordn|pos)*P(pos)
-                // P(pos) = N(pos) / N
+                // P(Review|C) = P(word1|C)*P(word2|C)*...*P(wordn|C)*P(C)
+                // P(C) = N(C) / N
                 
-                double wordProbs = 1;
+                double probPhraseGivenPositive = 1;
                 foreach (string s in content.Split(' '))
                 {
-                    var prob = words.First(w => w.First == s).Second;
-                    wordProbs *= prob;
+                    double probWordGivenPositive = vocabulary.First(w => w.First == s).Second;
+                    probPhraseGivenPositive *= probWordGivenPositive;
+                }
+                
+                double probPhraseGivenNegative = 1;
+                foreach (string s in content.Split(' '))
+                {
+                    double probWordGivenNegative = Math.Abs(vocabulary.First(w => w.First == s).Second - 1);
+                    probPhraseGivenNegative *= probWordGivenNegative;
                 }
 
-                double NPos = reviews.Count(r => r.Positive);
                 double N = reviews.Length;
+                double NPos = reviews.Count(r => r.Positive);
+                double NNeg = reviews.Count(r => !r.Positive);
                 double probabilityPositive = NPos / N;
-                wordProbs = wordProbs * probabilityPositive;
+                double probabilityNegative = NNeg / N;
                 
-                // todo: find pos of neg and normalize both 
-                // probPos = word
+                double probReviewGivenPositive = probPhraseGivenPositive * probabilityPositive;
+                double probReviewGivenNegative = probPhraseGivenNegative * probabilityNegative;
+                
+                // normalize
+                double NormalizedProbReviewGivenPositive =
+                    probReviewGivenPositive / (probReviewGivenPositive + probReviewGivenNegative);
+//                double NormalizedProbReviewGivenNegative =
+//                    probReviewGivenNegative / (probReviewGivenPositive + probReviewGivenNegative);
 
-                return wordProbs;
+                return NormalizedProbReviewGivenPositive;
             }
         }
     }

@@ -1,0 +1,10 @@
+C:\Users\Martin\code\Uni\wi\wi-assignment-2\bin\Debug\Accord.dll.config
+C:\Users\Martin\code\Uni\wi\wi-assignment-2\bin\Debug\wi_assignment_2.exe
+C:\Users\Martin\code\Uni\wi\wi-assignment-2\bin\Debug\wi_assignment_2.pdb
+C:\Users\Martin\code\Uni\wi\wi-assignment-2\bin\Debug\Accord.dll
+C:\Users\Martin\code\Uni\wi\wi-assignment-2\bin\Debug\MathNet.Numerics.dll
+C:\Users\Martin\code\Uni\wi\wi-assignment-2\bin\Debug\Accord.xml
+C:\Users\Martin\code\Uni\wi\wi-assignment-2\bin\Debug\MathNet.Numerics.xml
+C:\Users\Martin\code\Uni\wi\wi-assignment-2\obj\Debug\wi-assignment-2.csprojResolveAssemblyReference.cache
+C:\Users\Martin\code\Uni\wi\wi-assignment-2\obj\Debug\wi_assignment_2.exe
+C:\Users\Martin\code\Uni\wi\wi-assignment-2\obj\Debug\wi_assignment_2.pdb
