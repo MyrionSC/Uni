@@ -20,6 +20,8 @@ namespace wi_assignment_2
 //            List<List<User>> communities = Parser.ParseCommunitites(users, 2);
 //
 //            Utils.PrintCommunities(communities);
+            
+            
             Exercises.Exercise2();
             
             Console.WriteLine();

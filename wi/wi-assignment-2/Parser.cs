@@ -66,5 +66,37 @@ namespace wi_assignment_2
             }
             return communitites;
         }
+        
+        public static List<Review> ParseReviews(string filepath)
+        {
+            List<Review> reviews = new List<Review>();
+
+            string[] fileContent = File.ReadAllLines(filepath);
+            Review review = new Review();
+            foreach (string line in fileContent)
+            {
+                int score = 0;
+                string summary = "", text = "";
+                if (line.StartsWith("review/score:"))
+                {
+                    review.Score = Int32.Parse(line.Substring(13, line.Length - 13));
+                }
+                else if (line.StartsWith("review/summary:"))
+                {
+                    review.Summary = line.Substring(15, line.Length - 15);
+                }
+                else if (line.StartsWith("review/text:"))
+                {
+                    review.Text = line.Substring(12, line.Length - 12);
+                }
+                else
+                {
+                    reviews.Add(review);
+                    review = new Review();
+                }
+            }
+
+            return reviews;
+        }
     }
 }

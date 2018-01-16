@@ -49,10 +49,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Exercises.cs" />
+    <Compile Include="model\Review.cs" />
+    <Compile Include="model\User.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="User.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
