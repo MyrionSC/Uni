@@ -16,7 +16,6 @@ namespace assignment3
             List<Rating> testRatings = Parser.ParseRatings("data/u1.test");
 
             // create user-item rating matrix
-            int test = trainingRatings.Count;
             int usersCount = trainingRatings.Select(r => r.userId).ToArray().Max() + 1;
             int itemsCount = trainingRatings.Select(r => r.itemId).ToArray().Max() + 1;
             userMatrix = new int[usersCount, itemsCount];
@@ -46,30 +45,6 @@ namespace assignment3
             Console.WriteLine();
             Console.WriteLine(curmax);
             Console.WriteLine(highestRank);
-            
-
-
-
-//            Console.WriteLine(userSimilarity(1, 1));
-
-//            double curmax = 0;
-//            int mostSim = 0;
-//            for (int i = 1; i < usersCount; i++)
-//            {
-//                if (i == 1) continue;
-//                
-//                var sim = userSimilarity(1, i);
-//                Console.WriteLine(i + ": " + sim);
-//                if (curmax < sim)
-//                {
-//                    curmax = sim;
-//                    mostSim = i;
-//                }
-//            }
-//            Console.WriteLine();
-//            Console.WriteLine(curmax);
-//            Console.WriteLine(mostSim);
-
         }
 
         public static HashSet<int> findNearestNeigbors(int user, int usersCount)

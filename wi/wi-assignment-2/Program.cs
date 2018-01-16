@@ -21,6 +21,9 @@ namespace wi_assignment_2
 //
 //            Utils.PrintCommunities(communities);
 
+            
+            
+            
             List<Review> reviews = Parser.ParseReviews("SentimentTestingData.txt");
             Dictionary<string, int> vocabulary = new Dictionary<string, int>();
             Dictionary<string, int> vocabularyPositive = new Dictionary<string, int>();
