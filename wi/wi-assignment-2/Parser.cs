@@ -57,10 +57,6 @@ namespace wi_assignment_2
                     {
                         community.Add(user);
                     }
-//                    else
-//                    {
-//                        Console.WriteLine("user " + name + " fell through the cracks in the system");
-//                    }
                 }
                 communitites.Add(community);
             }
@@ -79,7 +75,7 @@ namespace wi_assignment_2
                 string summary = "", text = "";
                 if (line.StartsWith("review/score:"))
                 {
-                    review.Score = Int32.Parse(line.Substring(13, line.Length - 13));
+                    review.Positive = 2 < (int)double.Parse(line.Substring(13, line.Length - 13));
                 }
                 else if (line.StartsWith("review/summary:"))
                 {

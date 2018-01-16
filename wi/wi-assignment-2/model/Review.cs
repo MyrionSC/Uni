@@ -2,19 +2,19 @@
 {
     public class Review
     {
-        public int Score;
+        public bool Positive;
         public string Summary;
         public string Text;
 
         public Review()
         {
-            Score = 0;
+            Positive = false;
             Summary = "";
             Text = "";
         }
-        public Review(int Score, string summary, string text)
+        public Review(int score, string summary, string text)
         {
-            this.Score = Score;
+            Positive = score > 2;
             Summary = summary;
             Text = text;
         }
