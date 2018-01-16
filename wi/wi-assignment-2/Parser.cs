@@ -71,21 +71,16 @@ namespace wi_assignment_2
             Review review = new Review();
             foreach (string line in fileContent)
             {
-                int score = 0;
-                string summary = "", text = "";
                 if (line.StartsWith("review/score:"))
                 {
-                    review.Positive = 2 < (int)double.Parse(line.Substring(13, line.Length - 13));
-                }
-                else if (line.StartsWith("review/summary:"))
-                {
-                    review.Summary = line.Substring(15, line.Length - 15);
+                    var score = (int) double.Parse(line.Substring(13, line.Length - 13));
+                    review.Positive = score > 4;
                 }
                 else if (line.StartsWith("review/text:"))
                 {
                     review.Text = line.Substring(12, line.Length - 12);
                 }
-                else
+                else if (line.Trim() == "")
                 {
                     reviews.Add(review);
                     review = new Review();

@@ -22,24 +22,31 @@ namespace wi_assignment_2
 //            Utils.PrintCommunities(communities);
 
             List<Review> reviews = Parser.ParseReviews("SentimentTestingData.txt");
-            List<string> tokens = new List<string>();
-
-            reviews.ForEach(r => { tokens.AddRange(Tokenizer.Tokenize(r.Text)); });
             Dictionary<string, int> vocabulary = new Dictionary<string, int>();
-            tokens.ForEach(t =>
+            Dictionary<string, int> vocabularyPositive = new Dictionary<string, int>();
+
+            reviews.ForEach(r =>
             {
-                if (vocabulary.ContainsKey(t))
+                string[] tokens = Tokenizer.Tokenize(r.Text);
+                foreach (var t in tokens)
                 {
-                    vocabulary[t]++;
-                }
-                else
-                {
-                    vocabulary.Add(t, 0);
+                    if (vocabulary.ContainsKey(t))
+                    {
+                        vocabulary[t]++;
+                        if (r.Positive)
+                            vocabularyPositive[t]++;
+                    }
+                    else
+                    {
+                        vocabulary.Add(t, 1);
+                        vocabularyPositive.Add(t, 0);
+                        if (r.Positive)
+                            vocabularyPositive[t]++;
+                    }   
                 }
             });
             
             Console.WriteLine("Review count: " + reviews.Count);
-            Console.WriteLine("token count: " + tokens.Count);
             Console.WriteLine("vocabulary count: " + vocabulary.Count);
             Console.WriteLine();
             
@@ -61,10 +68,10 @@ namespace wi_assignment_2
                 "less chocolate chips. I haven't had store-bought Chips Ahoy for a few months so maybe they changed the formula for all these cookies, " +
                 "but if not, then these seem to be cheap knock-offs made with cheaper ingredients."; // score: 1
 
-            Console.WriteLine(contentPositiveProbability(Tokenizer.Tokenize(test1), reviews, vocabulary));
-            Console.WriteLine(contentPositiveProbability(Tokenizer.Tokenize(test2), reviews, vocabulary));
-            Console.WriteLine(contentPositiveProbability(Tokenizer.Tokenize(test3), reviews, vocabulary));
-            Console.WriteLine(contentPositiveProbability(Tokenizer.Tokenize(test4), reviews, vocabulary));
+            Console.WriteLine(contentPositiveProbability(Tokenizer.Tokenize(test1), reviews, vocabulary, vocabularyPositive));
+            Console.WriteLine(contentPositiveProbability(Tokenizer.Tokenize(test2), reviews, vocabulary, vocabularyPositive));
+            Console.WriteLine(contentPositiveProbability(Tokenizer.Tokenize(test3), reviews, vocabulary, vocabularyPositive));
+            Console.WriteLine(contentPositiveProbability(Tokenizer.Tokenize(test4), reviews, vocabulary, vocabularyPositive));
 
             Console.WriteLine();
             Console.WriteLine("-------------------------------");
@@ -73,7 +80,7 @@ namespace wi_assignment_2
 
 
         static public double contentPositiveProbability(string[] content, List<Review> reviews,
-            Dictionary<string, int> vocabulary)
+            Dictionary<string, int> vocabulary, Dictionary<string, int> vocabularyPositive)
         {
             // N = number of reviews
             // P(Review|C) = P(word1|C)*P(word2|C)*...*P(wordn|C)*P(C)
@@ -82,33 +89,21 @@ namespace wi_assignment_2
             double probPhraseGivenPositive = 1;
             foreach (string s in content)
             {
-                double probWordGivenPositive;
                 if (vocabulary.ContainsKey(s))
                 {
-                    probWordGivenPositive = vocabulary[s];
+                    double probWordGivenPositive = vocabularyPositive[s] / (double)vocabulary[s];
+                    probPhraseGivenPositive *= probWordGivenPositive != 0 ? probWordGivenPositive : 0.10; // we don't want to multiply by zero
                 }
-                else
-                {
-                    probWordGivenPositive = 1;
-                }
-
-                probPhraseGivenPositive *= probWordGivenPositive;
             }
 
             double probPhraseGivenNegative = 1;
             foreach (string s in content)
             {
-                double probWordGivenNegative;
                 if (vocabulary.ContainsKey(s))
                 {
-                    probWordGivenNegative = vocabulary[s];
+                    double probWordGivenNegative = Math.Abs(vocabularyPositive[s] / (double)vocabulary[s] - 1);
+                    probPhraseGivenNegative *= probWordGivenNegative != 0 ? probWordGivenNegative : 0.10; // we don't want to multiply by zero
                 }
-                else
-                {
-                    probWordGivenNegative = 1;
-                }
-
-                probPhraseGivenNegative *= probWordGivenNegative;
             }
 
             double N = reviews.Count;

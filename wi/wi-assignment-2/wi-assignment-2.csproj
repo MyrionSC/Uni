@@ -48,7 +48,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Exercises.cs" />
     <Compile Include="model\Review.cs" />
     <Compile Include="model\User.cs" />
     <Compile Include="Parser.cs" />
