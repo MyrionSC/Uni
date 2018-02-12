@@ -1,0 +1,18 @@
+package main;
+
+public class Main {
+
+	
+	public static void runTests () {
+		// test starting variables are set right
+		CarAlarmSystem cas = new CarAlarmSystem();
+		
+		
+		
+		
+	}
+	
+	public static void main(String[] args) {
+		runTests();
+	}
+}

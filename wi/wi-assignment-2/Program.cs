@@ -15,70 +15,70 @@ namespace wi_assignment_2
         {
             DateTime startTime = DateTime.Now;
 
-//            List<User> users = Parser.ParseUsers("friendships.reviews.txt");
-//            // With the current spectral cut algorithm, it only makes sense to cut twice. The rest of the cuts only a few people are shaven of a community each cut
-//            List<List<User>> communities = Parser.ParseCommunitites(users, 2);
+            List<User> users = Parser.ParseUsers("friendships.reviews.txt");
+            // With the current spectral cut algorithm, it only makes sense to cut twice. The rest of the cuts only a few people are shaven of a community each cut
+            List<List<User>> communities = Parser.ParseCommunitites(users, 3);
+
+            Utils.PrintCommunities(communities);
+
+            
+            
+            
+//            List<Review> reviews = Parser.ParseReviews("SentimentTestingData.txt");
+//            Dictionary<string, int> vocabulary = new Dictionary<string, int>();
+//            Dictionary<string, int> vocabularyPositive = new Dictionary<string, int>();
 //
-//            Utils.PrintCommunities(communities);
-
-            
-            
-            
-            List<Review> reviews = Parser.ParseReviews("SentimentTestingData.txt");
-            Dictionary<string, int> vocabulary = new Dictionary<string, int>();
-            Dictionary<string, int> vocabularyPositive = new Dictionary<string, int>();
-
-            reviews.ForEach(r =>
-            {
-                string[] tokens = Tokenizer.Tokenize(r.Text);
-                foreach (var t in tokens)
-                {
-                    if (vocabulary.ContainsKey(t))
-                    {
-                        vocabulary[t]++;
-                        if (r.Positive)
-                            vocabularyPositive[t]++;
-                    }
-                    else
-                    {
-                        vocabulary.Add(t, 1);
-                        vocabularyPositive.Add(t, 0);
-                        if (r.Positive)
-                            vocabularyPositive[t]++;
-                    }   
-                }
-            });
-            
-            Console.WriteLine("Review count: " + reviews.Count);
-            Console.WriteLine("vocabulary count: " + vocabulary.Count);
-            Console.WriteLine();
-            
-            string test1 =
-                "Best granola cereal I've ever eaten!  You don't have to soak it before eating, lol."; // score: 5
-            string test2 =
-                "I ordered this product thinking it was going to come in a box of 24 (as it is described in the product description). " +
-                "I was a little unsure of whether or not this could be too good to be true, but when I saw that the weight of the item was " +
-                "marked as 6.1 lbs and the shipping/handling was $8 I felt pretty confident that I would be receiving the 24 count box that I " +
-                "thought this to be. When I received the package there was only ONE bone in it. So pretty much I spent $10 on ONE bone that I " +
-                "could have gotten at the store for $3. Dont make the same mistake as me! VERY poor product description by Ozbo!"; // score: 1
-            string test3 =
-                "If you don't have the time to cut up ginger and boil it for it's wonderful flavor here's an alternative.  This tea is refreshing.  " +
-                "True ginger flavor and punch is wonderful."; // score: 4
-            string test4 =
-                "I had a good experience with other Amazon grocery products and these were a good deal, so I bought a three pack. They weren't horrible " +
-                "but they don't taste the same as the ones you buy in the store. They taste like cheap generic chocolate chip cookies. Which is not " +
-                "necessarily bad, but not what I expected for the price and Chips Ahoy brand. They are cheaper tasting, a little stale and much " +
-                "less chocolate chips. I haven't had store-bought Chips Ahoy for a few months so maybe they changed the formula for all these cookies, " +
-                "but if not, then these seem to be cheap knock-offs made with cheaper ingredients."; // score: 1
-
-            Console.WriteLine(contentPositiveProbability(Tokenizer.Tokenize(test1), reviews, vocabulary, vocabularyPositive));
-            Console.WriteLine(contentPositiveProbability(Tokenizer.Tokenize(test2), reviews, vocabulary, vocabularyPositive));
-            Console.WriteLine(contentPositiveProbability(Tokenizer.Tokenize(test3), reviews, vocabulary, vocabularyPositive));
-            Console.WriteLine(contentPositiveProbability(Tokenizer.Tokenize(test4), reviews, vocabulary, vocabularyPositive));
-
-            Console.WriteLine();
-            Console.WriteLine("-------------------------------");
-            Console.WriteLine("Execution time: " + (DateTime.Now - startTime));
+//            reviews.ForEach(r =>
+//            {
+//                string[] tokens = Tokenizer.Tokenize(r.Text);
+//                foreach (var t in tokens)
+//                {
+//                    if (vocabulary.ContainsKey(t))
+//                    {
+//                        vocabulary[t]++;
+//                        if (r.Positive)
+//                            vocabularyPositive[t]++;
+//                    }
+//                    else
+//                    {
+//                        vocabulary.Add(t, 1);
+//                        vocabularyPositive.Add(t, 0);
+//                        if (r.Positive)
+//                            vocabularyPositive[t]++;
+//                    }   
+//                }
+//            });
+//            
+//            Console.WriteLine("Review count: " + reviews.Count);
+//            Console.WriteLine("vocabulary count: " + vocabulary.Count);
+//            Console.WriteLine();
+//            
+//            string test1 =
+//                "Best granola cereal I've ever eaten!  You don't have to soak it before eating, lol."; // score: 5
+//            string test2 =
+//                "I ordered this product thinking it was going to come in a box of 24 (as it is described in the product description). " +
+//                "I was a little unsure of whether or not this could be too good to be true, but when I saw that the weight of the item was " +
+//                "marked as 6.1 lbs and the shipping/handling was $8 I felt pretty confident that I would be receiving the 24 count box that I " +
+//                "thought this to be. When I received the package there was only ONE bone in it. So pretty much I spent $10 on ONE bone that I " +
+//                "could have gotten at the store for $3. Dont make the same mistake as me! VERY poor product description by Ozbo!"; // score: 1
+//            string test3 =
+//                "If you don't have the time to cut up ginger and boil it for it's wonderful flavor here's an alternative.  This tea is refreshing.  " +
+//                "True ginger flavor and punch is wonderful."; // score: 4
+//            string test4 =
+//                "I had a good experience with other Amazon grocery products and these were a good deal, so I bought a three pack. They weren't horrible " +
+//                "but they don't taste the same as the ones you buy in the store. They taste like cheap generic chocolate chip cookies. Which is not " +
+//                "necessarily bad, but not what I expected for the price and Chips Ahoy brand. They are cheaper tasting, a little stale and much " +
+//                "less chocolate chips. I haven't had store-bought Chips Ahoy for a few months so maybe they changed the formula for all these cookies, " +
+//                "but if not, then these seem to be cheap knock-offs made with cheaper ingredients."; // score: 1
+//
+//            Console.WriteLine(contentPositiveProbability(Tokenizer.Tokenize(test1), reviews, vocabulary, vocabularyPositive));
+//            Console.WriteLine(contentPositiveProbability(Tokenizer.Tokenize(test2), reviews, vocabulary, vocabularyPositive));
+//            Console.WriteLine(contentPositiveProbability(Tokenizer.Tokenize(test3), reviews, vocabulary, vocabularyPositive));
+//            Console.WriteLine(contentPositiveProbability(Tokenizer.Tokenize(test4), reviews, vocabulary, vocabularyPositive));
+//
+//            Console.WriteLine();
+//            Console.WriteLine("-------------------------------");
+//            Console.WriteLine("Execution time: " + (DateTime.Now - startTime));
         }
 
 

@@ -1,0 +1,23 @@
+package main;
+
+public class Main {
+	public doorState door = doorState.opened;
+	public alarmState alarm = alarmState.flash;
+
+	
+	public static void closeDoor () {
+		System.out.println("Hello World");	
+	}
+	
+	public static void main(String[] args) {
+		closeDoor();
+	}
+	
+
+	enum doorState {
+		opened, closed, locked, unlocked
+	}
+	enum alarmState {
+		flash, sound, armed
+	}
+}

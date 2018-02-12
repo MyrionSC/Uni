@@ -1,0 +1,17 @@
+package main;
+
+public class Main {
+	public String door = "opened";
+	public String alarm = "flash";
+	
+	
+	public static void closeDoor () {
+		System.out.println("Hello World");	
+	}
+	
+	public static void main(String[] args) {
+		closeDoor();
+	}
+	
+	
+}
