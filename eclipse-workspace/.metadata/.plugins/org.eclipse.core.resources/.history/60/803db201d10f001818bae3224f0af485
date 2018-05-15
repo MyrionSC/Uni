@@ -1,7 +1,0 @@
-package test_and_verification;
-
-public class Main {
-	Main() {
-		System.out.println("Hello World");
-	}
-}
