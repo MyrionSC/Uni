@@ -13,6 +13,3 @@
 plot "accel-sum.dat" using 1:2 with lines title "sum of accel data", \
  "peak.dat" using 1:2 with points ps 2 title "step peaks", \
  "valley.dat" using 1:2 with points ps 2 title "step valleys"
- 
-
-#"step.dat" using 1:(-10):(0):(40) with vectors nohead title "step detected"
