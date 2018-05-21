@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 
-scp -r sw8@marand.dk:stonas-logs/$(ssh sw8@marand.dk "ls -r stonas-logs | head -1") .
+
+LOGDIR=$(ssh sw8@marand.dk "ls -r stonas-logs | head -1")
+scp -r "sw8@marand.dk:stonas-logs/$LOGDIR" . && cp ./sum.p $LOGDIR
