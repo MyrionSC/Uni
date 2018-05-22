@@ -5,14 +5,13 @@
   unset label                            # remove any previous labels
   set xtic auto                          # set xtics automatically
   set ytic auto                          # set ytics automatically
-  set term qt title "dynamic and static step len"
-  set title "dynamic and static step len"
+  set term qt title "delta vs step length"
+  set title "delta vs step length"
   set clip two
-  set xlabel "x"
-  set ylabel "y"
+  set xlabel "delta"
+  set ylabel "step length"
 plot \
- "static-step-vector.dat" using 1:2 with linespoints title "static step vector", \
- "dynamic-step-vector.dat" using 1:2 with linespoints title "dynamic step vector"
+ "delta-vs-len.dat" using 1:2 with linespoints title "delta vs len"
 
 
 
