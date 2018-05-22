@@ -8,14 +8,14 @@
   set term qt title "sum"
   set title "accelerometer and steps over time"
   set clip two
-  set xlabel "Time(ms)"
-  set ylabel "accel readings"
+  set xlabel "Time (ms)"
+  set ylabel "accel readings (m\s^2)"
 plot \
  "moving-avg.dat" using ($1):($2) with linespoints title "moving average", \
  "peak.dat" using 1:2 with points ps 2 title "step peaks", \
  "valley.dat" using 1:2 with points ps 2 title "step valleys", \
- "step-detected.dat" using 1:(-10):(0):(30) with vectors nohead title "step detected"
+ "step-calculated.dat" using 1:(-10):(0):(30) with vectors nohead title "step calculated", \
+ "step-sensor.dat" using 1:(-10):(0):(30) with vectors nohead title "sensor step detected"
 
 
- #"step-calculated.dat" using 1:(-10):(0):(30) with vectors nohead title "step calculated", \
  #"accel-sum.dat" using 1:2 with linespoints title "sum of accel data", \

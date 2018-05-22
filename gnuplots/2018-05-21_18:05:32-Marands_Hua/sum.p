@@ -12,7 +12,7 @@
   set ylabel "accel readings"
 plot \
  "moving-avg.dat" using ($1):($2) with linespoints title "moving average", \
- "step-peak.dat" using 1:(-10):(0):(40) with vectors nohead title "step detected", \
+ "step-peak.dat" using 1:(-10):(0):(25) with vectors nohead title "step detected", \
  "peak.dat" using 1:2 with points ps 2 title "peaks", \
  "valley.dat" using 1:2 with points ps 2 title "valleys"
 

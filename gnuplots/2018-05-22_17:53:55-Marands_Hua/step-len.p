@@ -5,16 +5,21 @@
   unset label                            # remove any previous labels
   set xtic auto                          # set xtics automatically
   set ytic auto                          # set ytics automatically
-  set term qt title "sum"
-  set title "accelerometer and steps over time"
+  set term qt title "dynamic and static step len"
+  set title "dynamic and static step len"
   set clip two
-  set xlabel "Time(ms)"
-  set ylabel "accel readings"
+  set xlabel "x"
+  set ylabel "y"
 plot \
- "moving-avg.dat" using ($1):($2) with linespoints title "moving average", \
- "peak.dat" using 1:2 with points ps 2 title "step peaks", \
- "valley.dat" using 1:2 with points ps 2 title "step valleys", \
- "step-detected.dat" using 1:(-10):(0):(30) with vectors nohead title "step detected"
+ "static-step-len.dat" using 1:2 with linespoints title "static step length", \
+ "dynamic-step-len.dat" using 1:2 with linespoints title "dynamic step length"
+
+
+
+# "moving-avg.dat" using ($1):($2) with linespoints title "moving average", \
+# "peak.dat" using 1:2 with points ps 2 title "step peaks", \
+# "valley.dat" using 1:2 with points ps 2 title "step valleys", \
+# "step-detected.dat" using 1:(-10):(0):(30) with vectors nohead title "step detected"
 
 
  #"step-calculated.dat" using 1:(-10):(0):(30) with vectors nohead title "step calculated", \
