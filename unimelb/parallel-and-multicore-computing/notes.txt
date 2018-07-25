@@ -1,0 +1,8 @@
+How many of the books are mandatory (maybe just sections?)
+- Elements of parallel computing (the newest)
+- Parallel programming (most material from)
+
+Programs run on unimelb spartan cluster
+app url: https://dashboard.hpc.unimelb.edu.au/karaage/applications/785d20748728da8ab62e553c3c15a1e30f677234/
+- ask: do pacm have a project
+
