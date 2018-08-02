@@ -171,7 +171,59 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    # inits
+    startState = problem.getStartState()
+    startNode = Node(startState, None, 0, None)
+    frontier = util.PriorityQueue()
+    frontier.push(startNode, startNode.cost)
+    visitedNodes = [startNode]
+    closedStates = [startState]
+
+    # perform ucs untill goal is found
+    goalNode = None
+    while(not frontier.isEmpty()):
+        node = frontier.pop()
+        visitedNodes.append(node)
+        closedStates.append(node.state)
+
+        # temp = []
+        # for t in frontier.heap:
+        #     # temp.append((t[0],t[1]))
+        #     temp.append(t[2].state)
+        # print(temp)
+
+        if problem.isGoalState(node.state):
+            goalNode = node
+            break
+
+        succs = problem.getSuccessors(node.state)
+        for succ in succs:
+            s, d, c = succ
+
+            if s not in closedStates:
+
+                # if the successor is already in the frontier do not add it again
+                succsInFrontier = filter(lambda t: t[2].state == s, frontier.heap)
+                if len(succsInFrontier) > 0:
+                    if succsInFrontier[0][2].cost > node.cost + c:
+                        succsInFrontier[0][2].parent = node
+                        succsInFrontier[0][2].cost = node.cost + c
+                    else:
+                        continue
+
+                succNode = Node(s, d, node.cost + c, node)
+                frontier.push(succNode, node.cost + c)
+
+    # from goal node, backtrack untill start node
+    currentNode = goalNode
+    path = []
+    while currentNode.parent is not None:
+        path.append(currentNode.direction)
+        currentNode = currentNode.parent
+    path.reverse()
+
+    return path
 
 def nullHeuristic(state, problem=None):
     """
