@@ -91,69 +91,41 @@ def depthFirstSearch(problem):
     """
     "*** YOUR CODE HERE ***"
 
-    # print "Start:", problem.getStartState()
-    # print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-    # print "Start's successors:", problem.getSuccessors(problem.getStartState())
-
-    from game import Directions
-    n = Directions.NORTH
-    e = Directions.EAST
-    s = Directions.SOUTH
-    w = Directions.WEST
-
-    # startState, startDirection, startCost = problem.getStartState()
+    # inits
     startState = problem.getStartState()
     startNode = Node(startState, None, 0, None)
     frontier = util.Stack()
+    frontier.push(startNode)
     visitedNodes = [startNode]
     closedStates = [startState]
 
-    # closedStates = [(1,1), (1,2), (2,2)]
-
-    # find initial states and push on stack
-    initSuccs = problem.getSuccessors(problem.getStartState())
-    for s in initSuccs:
-        s, d, c = s
-        frontier.push(Node(s,d,c, startNode))
-
     # perform dfs untill goal is found
+    goalNode = None
     while(not frontier.isEmpty()):
         node = frontier.pop()
         visitedNodes.append(node)
         closedStates.append(node.state)
 
-        # print(problem.getSuccessors(s))
-        #
-        # if len(frontier.list) > 10:
-        #     continue
-        #
-        # if problem.isGoalState(s):
-        #     print("got em!")
-        #     continue
-        #
-        # for s in problem.getSuccessors(s):
-        #     frontier.push(s)
+        if problem.isGoalState(node.state):
+            goalNode = node
+            break
+
+        succs = problem.getSuccessors(node.state)
+        for succ in succs:
+            s, d, c = succ
+            if s not in closedStates:
+                succNode = Node(s, d, c, node)
+                frontier.push(succNode)
 
     # from goal node, backtrack untill start node
+    currentNode = goalNode
+    path = []
+    while currentNode.parent is not None:
+        path.append(currentNode.direction)
+        currentNode = currentNode.parent
+    path.reverse()
 
-    for n in visitedNodes:
-        print(n.direction)
-
-    print(closedStates)
-
-
-
-
-
-
-
-
-
-    # return  [n, n, w, w, w, w, n, n, n, n, n, n, n]
-    return  []
-
-
-    # util.raiseNotDefined()
+    return path
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
