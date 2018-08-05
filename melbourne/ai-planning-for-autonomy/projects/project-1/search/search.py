@@ -209,7 +209,51 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    # inits
+    startState = problem.getStartState()
+    startNode = Node(startState, None, 0, None)
+    frontier = util.PriorityQueue()
+    frontier.push(startNode, 0)
+    visitedNodes = [startNode]
+    closedStates = [startState]
+
+    # perform ucs untill goal is found
+    goalNode = None
+    while(not frontier.isEmpty()):
+        node = frontier.pop()
+        visitedNodes.append(node)
+        closedStates.append(node.state)
+
+        for i in frontier.heap:
+            print(i[0], i[1], i[2].state, i[2].direction, i[2].cost)
+
+        if problem.isGoalState(node.state):
+            goalNode = node
+            break
+
+        succs = problem.getSuccessors(node.state)
+        for succ in succs:
+            s, d, c = succ
+
+            if s not in closedStates:
+                succsInFrontier = filter(lambda t: t[2].state == s, frontier.heap)
+                if len(succsInFrontier) > 0:
+                    # if the successor is already in the frontier do not add it again. Just update parent
+                    if succsInFrontier[0][2].cost + heuristic(s, problem) > node.cost + c + heuristic(s, problem):
+                        succsInFrontier[0][2].direction = d
+                        succsInFrontier[0][2].cost = node.cost + c
+                        succsInFrontier[0][2].parent = node
+                        frontier.update(succsInFrontier[0][2], node.cost + c + heuristic(s, problem))
+                    continue
+
+                succNode = Node(s, d, node.cost + c, node)
+                frontier.push(succNode, node.cost + c + heuristic(s, problem))
+
+    # from goal node, backtrack until start node
+    path = extractPath(goalNode)
+
+    return path
 
 
 # helper classes
@@ -220,7 +264,7 @@ class Node:
         self.cost = cost
         self.parent = parent
 
-# helper function
+# helper functions
 def extractPath(goalNode):
     currentNode = goalNode
     path = []
