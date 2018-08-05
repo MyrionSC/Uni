@@ -72,13 +72,6 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
-class Node:
-    def __init__(self, state, direction, cost, parent):
-        self.state = state
-        self.direction = direction
-        self.cost = cost
-        self.parent = parent
-
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first.
@@ -118,12 +111,7 @@ def depthFirstSearch(problem):
                 frontier.push(succNode)
 
     # from goal node, backtrack untill start node
-    currentNode = goalNode
-    path = []
-    while currentNode.parent is not None:
-        path.append(currentNode.direction)
-        currentNode = currentNode.parent
-    path.reverse()
+    path = extractPath(goalNode)
 
     return path
 
@@ -159,14 +147,10 @@ def breadthFirstSearch(problem):
                 frontier.push(succNode)
 
     # from goal node, backtrack untill start node
-    currentNode = goalNode
-    path = []
-    while currentNode.parent is not None:
-        path.append(currentNode.direction)
-        currentNode = currentNode.parent
-    path.reverse()
+    path = extractPath(goalNode)
 
     return path
+
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
@@ -187,12 +171,6 @@ def uniformCostSearch(problem):
         visitedNodes.append(node)
         closedStates.append(node.state)
 
-        # temp = []
-        # for t in frontier.heap:
-        #     # temp.append((t[0],t[1]))
-        #     temp.append(t[2].state)
-        # print(temp)
-
         if problem.isGoalState(node.state):
             goalNode = node
             break
@@ -203,25 +181,21 @@ def uniformCostSearch(problem):
 
             if s not in closedStates:
 
-                # if the successor is already in the frontier do not add it again
+                # if the successor is already in the frontier do not add it again. Just update parent
                 succsInFrontier = filter(lambda t: t[2].state == s, frontier.heap)
                 if len(succsInFrontier) > 0:
                     if succsInFrontier[0][2].cost > node.cost + c:
-                        succsInFrontier[0][2].parent = node
+                        succsInFrontier[0][2].direction = d
                         succsInFrontier[0][2].cost = node.cost + c
-                    else:
-                        continue
+                        succsInFrontier[0][2].parent = node
+                        frontier.update(succsInFrontier[0][2], node.cost + c)
+                    continue
 
                 succNode = Node(s, d, node.cost + c, node)
                 frontier.push(succNode, node.cost + c)
 
     # from goal node, backtrack untill start node
-    currentNode = goalNode
-    path = []
-    while currentNode.parent is not None:
-        path.append(currentNode.direction)
-        currentNode = currentNode.parent
-    path.reverse()
+    path = extractPath(goalNode)
 
     return path
 
@@ -236,6 +210,25 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
+
+
+# helper classes
+class Node:
+    def __init__(self, state, direction, cost, parent):
+        self.state = state
+        self.direction = direction
+        self.cost = cost
+        self.parent = parent
+
+# helper function
+def extractPath(goalNode):
+    currentNode = goalNode
+    path = []
+    while currentNode.parent is not None:
+        path.append(currentNode.direction)
+        currentNode = currentNode.parent
+    path.reverse()
+    return path
 
 
 # Abbreviations
