@@ -127,6 +127,14 @@ def breadthFirstSearch(problem):
     visitedNodes = [startNode]
     closedStates = [startState]
 
+
+    # perform bfs to find all goal states until all nodes have been explored
+
+
+    #
+
+
+
     # perform bfs untill goal is found
     goalNode = None
     while(not frontier.isEmpty()):

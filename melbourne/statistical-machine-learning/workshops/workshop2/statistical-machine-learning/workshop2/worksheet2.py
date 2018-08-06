@@ -5,25 +5,27 @@ import io
 
 
 
-
-
-
-
 A = [
-    [1, 1, 1],
-    [0, 2, 5],
-    [2, 5, -1]
+    [1, 1],
+    [0, 2],
+    [0, 2]
 ]
 
-b = [6, -4, 27]
+print(np.dot(np.transpose(A), A))
 
+print(np.linspace(0,1,1000))
+
+# A = [
+#     [1, 1],
+#     [0, 2]
+# ]
+#
+# b = [6, -4]
+#
 # X = np.linalg.solve(A, b)
-ainv = np.invert(A)
-X = np.dot(ainv, b)
+# print(X)
 
-print(X)
-
-# AX=B
+# AX=b
 
 # x + y + z = 6
 # 2y + 5z = -4
