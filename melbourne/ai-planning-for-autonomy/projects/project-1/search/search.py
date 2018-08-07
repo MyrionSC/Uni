@@ -121,13 +121,31 @@ def breadthFirstSearch(problem):
 
     # inits
     startState = problem.getStartState()
+    completePath = []
 
-    path = performSearch(startState, problem)
+    # find path and cost to all goal states
 
-    # path.extend(['East', 'East', 'North', 'North', 'North'])
 
-    return path
 
+    # for all goal states, find path and cost to all other goal states
+
+
+
+    # calculate shortest path between all states
+
+    while True:
+        res = performSearch(startState, problem)
+        if res is not None:
+            path, goalState = res
+            if startState == goalState:
+                break
+
+            completePath.extend(path)
+            startState = goalState
+        else:
+            break
+
+    return completePath
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
@@ -202,8 +220,8 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         visitedNodes.append(node)
         closedStates.append(node.state)
 
-        for i in frontier.heap:
-            print(i[0], i[1], i[2].state, i[2].direction, i[2].cost)
+        # for i in frontier.heap:
+        #     print(i[0], i[1], i[2].state, i[2].direction, i[2].cost)
 
         if problem.isGoalState(node.state):
             goalNode = node
