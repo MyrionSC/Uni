@@ -121,35 +121,35 @@ def breadthFirstSearch(problem):
 
     # inits
     startState = problem.getStartState()
-    completePath = []
-    noGoalStates = 0
+    startNode = Node(startState, None, 0, None)
+    frontier = util.Queue()
+    frontier.push(startNode)
+    visitedNodes = [startNode]
+    closedStates = [startState]
 
-    # find path and cost to all goal states. Record number of goal states as well.
-    goalNodes = exploreStateSpace(startState, problem)
+    # perform bfs untill goal is found
+    goalNode = None
+    while(not frontier.isEmpty()):
+        node = frontier.pop()
+        visitedNodes.append(node)
+        closedStates.append(node.state)
 
-    print(goalNodes)
-
-
-
-    # for all goal states, find path and cost to all other goal states
-
-
-
-    # calculate shortest path between all states
-
-    while True:
-        res = performSearch(startState, problem)
-        if res is not None:
-            path, goalState = res
-            if startState == goalState:
-                break
-
-            completePath.extend(path)
-            startState = goalState
-        else:
+        if problem.isGoalState(node.state):
+            goalNode = node
             break
 
-    return completePath
+        succs = problem.getSuccessors(node.state)
+        for succ in succs:
+            s, d, c = succ
+
+            if s not in closedStates and len(filter(lambda n: n.state == s, frontier.list)) <= 0:
+                succNode = Node(s, d, c, node)
+                frontier.push(succNode)
+
+    # from goal node, backtrack untill start node
+    path = extractPath(goalNode)
+
+    return path
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
