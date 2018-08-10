@@ -122,8 +122,12 @@ def breadthFirstSearch(problem):
     # inits
     startState = problem.getStartState()
     completePath = []
+    noGoalStates = 0
 
-    # find path and cost to all goal states
+    # find path and cost to all goal states. Record number of goal states as well.
+    goalNodes = exploreStateSpace(startState, problem)
+
+    print(goalNodes)
 
 
 
@@ -299,6 +303,34 @@ def performSearch(startState, problem):
     if goalNode is not None:
         return (extractPath(goalNode), goalNode.state)
     return None
+
+def exploreStateSpace(startState, problem):
+    startNode = Node(startState, None, 0, None)
+    frontier = util.Queue()
+    frontier.push(startNode)
+    visitedNodes = [startNode]
+    closedStates = [startState]
+
+    goalNodes = []
+
+    # perform bfs until goal is found
+    while not frontier.isEmpty():
+        node = frontier.pop()
+        visitedNodes.append(node)
+        closedStates.append(node.state)
+
+        if problem.isGoalState(node.state):
+            goalNodes.append(node)
+
+        succs = problem.getSuccessors(node.state)
+        for succ in succs:
+            s, d, c = succ
+
+            if s not in closedStates and len(filter(lambda n: n.state == s, frontier.list)) <= 0:
+                succNode = Node(s, d, c, node)
+                frontier.push(succNode)
+
+    return goalNodes
 
 # Abbreviations
 bfs = breadthFirstSearch
