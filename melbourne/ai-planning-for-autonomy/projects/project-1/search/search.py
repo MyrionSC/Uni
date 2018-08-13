@@ -72,8 +72,14 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
+def nullHeuristic(state, problem=None):
+    """
+    A heuristic function estimates the cost from the current state to the nearest
+    goal in the provided SearchProblem.  This heuristic is trivial.
+    """
+    return 0
 
-def search(problem, frontier, heuristic=None):
+def search(problem, frontier, heuristic=nullHeuristic):
     closed = []
     startState = problem.getStartState()
 
@@ -97,7 +103,7 @@ def search(problem, frontier, heuristic=None):
                 if isinstance(frontier, util.Stack) or isinstance(frontier, util.Queue):
                     frontier.push((s, newActions))
                 elif isinstance(frontier, util.PriorityQueue):
-                    frontier.push((s, newActions), problem.getCostOfActions(newActions) + heuristic(c, problem))
+                    frontier.push((s, newActions), problem.getCostOfActions(newActions) + heuristic(s, problem))
 
     # no solution could be found
     return []
@@ -116,224 +122,22 @@ def depthFirstSearch(problem):
     understand the search problem that is being passed in:
     """
     "*** YOUR CODE HERE ***"
-
-    # inits
-    startState = problem.getStartState()
-    startNode = Node(startState, None, 0, None)
-    frontier = util.Stack()
-    frontier.push(startNode)
-    visitedNodes = [startNode]
-    closedStates = [startState]
-
-    # perform dfs untill goal is found
-    goalNode = None
-    while(not frontier.isEmpty()):
-        node = frontier.pop()
-        visitedNodes.append(node)
-        closedStates.append(node.state)
-
-        if problem.isGoalState(node.state):
-            goalNode = node
-            break
-
-        succs = problem.getSuccessors(node.state)
-        for succ in succs:
-            s, d, c = succ
-            if s not in closedStates:
-                succNode = Node(s, d, c, node)
-                frontier.push(succNode)
-
-    # from goal node, backtrack untill start node
-    path = extractPath(goalNode)
-
-    return path
+    return search(problem, util.Stack())
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-
     return search(problem, util.Queue())
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-
-    # inits
-    startState = problem.getStartState()
-    startNode = Node(startState, None, 0, None)
-    frontier = util.PriorityQueue()
-    frontier.push(startNode, startNode.cost)
-    visitedNodes = [startNode]
-    closedStates = [startState]
-
-    # perform ucs untill goal is found
-    goalNode = None
-    while(not frontier.isEmpty()):
-        node = frontier.pop()
-        visitedNodes.append(node)
-        closedStates.append(node.state)
-
-        if problem.isGoalState(node.state):
-            goalNode = node
-            break
-
-        succs = problem.getSuccessors(node.state)
-        for succ in succs:
-            s, d, c = succ
-
-            if s not in closedStates:
-
-                # if the successor is already in the frontier do not add it again. Just update parent
-                succsInFrontier = filter(lambda t: t[2].state == s, frontier.heap)
-                if len(succsInFrontier) > 0:
-                    if succsInFrontier[0][2].cost > node.cost + c:
-                        succsInFrontier[0][2].direction = d
-                        succsInFrontier[0][2].cost = node.cost + c
-                        succsInFrontier[0][2].parent = node
-                        frontier.update(succsInFrontier[0][2], node.cost + c)
-                    continue
-
-                succNode = Node(s, d, node.cost + c, node)
-                frontier.push(succNode, node.cost + c)
-
-    # from goal node, backtrack untill start node
-    path = extractPath(goalNode)
-
-    return path
-
-def nullHeuristic(state, problem=None):
-    """
-    A heuristic function estimates the cost from the current state to the nearest
-    goal in the provided SearchProblem.  This heuristic is trivial.
-    """
-    return 0
+    return search(problem, util.PriorityQueue())
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-
-    # inits
-    startState = problem.getStartState()
-    startNode = Node(startState, None, 0, None)
-    frontier = util.PriorityQueue()
-    frontier.push(startNode, 0)
-    visitedNodes = [startNode]
-    closedStates = [startState]
-
-    # perform ucs untill goal is found
-    goalNode = None
-    while(not frontier.isEmpty()):
-        node = frontier.pop()
-        visitedNodes.append(node)
-        closedStates.append(node.state)
-
-        # for i in frontier.heap:
-        #     print(i[0], i[1], i[2].state, i[2].direction, i[2].cost)
-
-        if problem.isGoalState(node.state):
-            goalNode = node
-            break
-
-        succs = problem.getSuccessors(node.state)
-        for succ in succs:
-            s, d, c = succ
-
-            if s not in closedStates:
-                succsInFrontier = filter(lambda t: t[2].state == s, frontier.heap)
-                if len(succsInFrontier) > 0:
-                    # if the successor is already in the frontier do not add it again. Just update parent
-                    if succsInFrontier[0][2].cost + heuristic(s, problem) > node.cost + c + heuristic(s, problem):
-                        succsInFrontier[0][2].direction = d
-                        succsInFrontier[0][2].cost = node.cost + c
-                        succsInFrontier[0][2].parent = node
-                        frontier.update(succsInFrontier[0][2], node.cost + c + heuristic(s, problem))
-                    continue
-
-                succNode = Node(s, d, node.cost + c, node)
-                frontier.push(succNode, node.cost + c + heuristic(s, problem))
-
-    # from goal node, backtrack until start node
-    path = extractPath(goalNode)
-
-    return path
-
-
-# helper classes
-class Node:
-    def __init__(self, state, direction, cost, parent):
-        self.state = state
-        self.direction = direction
-        self.cost = cost
-        self.parent = parent
-
-# helper functions
-def extractPath(goalNode):
-    currentNode = goalNode
-    path = []
-    while currentNode.parent is not None:
-        path.append(currentNode.direction)
-        currentNode = currentNode.parent
-    path.reverse()
-    return path
-
-def performSearch(startState, problem):
-    startNode = Node(startState, None, 0, None)
-    frontier = util.Queue()
-    frontier.push(startNode)
-    visitedNodes = [startNode]
-    closedStates = [startState]
-
-    # perform bfs until goal is found
-    goalNode = None
-    while not frontier.isEmpty():
-        node = frontier.pop()
-        visitedNodes.append(node)
-        closedStates.append(node.state)
-
-        if problem.isGoalState(node.state):
-            goalNode = node
-            break
-
-        succs = problem.getSuccessors(node.state)
-        for succ in succs:
-            s, d, c = succ
-
-            if s not in closedStates and len(filter(lambda n: n.state == s, frontier.list)) <= 0:
-                succNode = Node(s, d, c, node)
-                frontier.push(succNode)
-
-    # from goal node, backtrack untill start node
-    if goalNode is not None:
-        return (extractPath(goalNode), goalNode.state)
-    return None
-
-def exploreStateSpace(startState, problem):
-    startNode = Node(startState, None, 0, None)
-    frontier = util.Queue()
-    frontier.push(startNode)
-    visitedNodes = [startNode]
-    closedStates = [startState]
-
-    goalNodes = []
-
-    # perform bfs until goal is found
-    while not frontier.isEmpty():
-        node = frontier.pop()
-        visitedNodes.append(node)
-        closedStates.append(node.state)
-
-        if problem.isGoalState(node.state):
-            goalNodes.append(node)
-
-        succs = problem.getSuccessors(node.state)
-        for succ in succs:
-            s, d, c = succ
-
-            if s not in closedStates and len(filter(lambda n: n.state == s, frontier.list)) <= 0:
-                succNode = Node(s, d, c, node)
-                frontier.push(succNode)
-
-    return goalNodes
+    return search(problem, util.PriorityQueue(), heuristic)
 
 # Abbreviations
 bfs = breadthFirstSearch

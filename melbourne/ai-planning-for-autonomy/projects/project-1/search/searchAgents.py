@@ -360,7 +360,6 @@ def cornersHeuristic(state, problem):
 
     "*** YOUR CODE HERE ***"
     return 4 - len(state[1])
-    # return 0
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
