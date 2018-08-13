@@ -453,7 +453,13 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    food = foodGrid.asList()
+
+    # find farthest food from pacman and use that as heuristic
+    farthestFoodFromPacman = 0
+    for f in food:
+        farthestFoodFromPacman = max(mazeDistance(position, f, problem.startingGameState), farthestFoodFromPacman)
+    return farthestFoodFromPacman
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
