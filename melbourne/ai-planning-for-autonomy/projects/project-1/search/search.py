@@ -72,6 +72,39 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
+
+def search(problem, frontier, heuristic=None):
+    closed = []
+    startState = problem.getStartState()
+
+    if isinstance(frontier, util.Stack) or isinstance(frontier, util.Queue):
+        frontier.push((startState, []))
+    elif isinstance(frontier, util.PriorityQueue):
+        frontier.push((startState, []), heuristic(startState, problem))
+
+    # until solution is found, go through frontier, adding states to closed and new states to frontier
+    while frontier:
+        node, actionsTaken = frontier.pop()
+
+        if not node in closed:
+            closed.append(node)
+            if problem.isGoalState(node):
+                return actionsTaken
+            succs = problem.getSuccessors(node)
+            for successor in succs:
+                s, d, c = successor
+                newActions = actionsTaken + [d]
+                if isinstance(frontier, util.Stack) or isinstance(frontier, util.Queue):
+                    frontier.push((s, newActions))
+                elif isinstance(frontier, util.PriorityQueue):
+                    frontier.push((s, newActions), problem.getCostOfActions(newActions) + heuristic(c, problem))
+
+    # no solution could be found
+    return []
+
+
+
+
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first.
@@ -119,37 +152,7 @@ def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
 
-    # inits
-    startState = problem.getStartState()
-    startNode = Node(startState, None, 0, None)
-    frontier = util.Queue()
-    frontier.push(startNode)
-    visitedNodes = [startNode]
-    closedStates = [startState]
-
-    # perform bfs untill goal is found
-    goalNode = None
-    while(not frontier.isEmpty()):
-        node = frontier.pop()
-        visitedNodes.append(node)
-        closedStates.append(node.state)
-
-        if problem.isGoalState(node.state):
-            goalNode = node
-            break
-
-        succs = problem.getSuccessors(node.state)
-        for succ in succs:
-            s, d, c = succ
-
-            if s not in closedStates and len(filter(lambda n: n.state == s, frontier.list)) <= 0:
-                succNode = Node(s, d, c, node)
-                frontier.push(succNode)
-
-    # from goal node, backtrack untill start node
-    path = extractPath(goalNode)
-
-    return path
+    return search(problem, util.Queue())
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
