@@ -40,6 +40,7 @@ from game import Actions
 import util
 import time
 import search
+import math
 
 class GoWestAgent(Agent):
     "An agent that goes West until it can't."
@@ -359,7 +360,25 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 4 - len(state[1])
+
+    # find average position of remaining corners and use manhattan distance to that position as heuristic
+    # The rationale is that when visiting a number of states you want to search from the middle first, so you get to the edges at about the same time
+    remainingCorners = set(corners) - set(state[1])
+    x, y = 0, 0
+    for c in remainingCorners:
+        x += c[0]
+        y += c[1]
+
+    if len(remainingCorners) != 0:
+        avgRemainingCorners = (x / len(remainingCorners), y / len(remainingCorners))
+        pacmanPos = state[0]
+        manhattanDistance = math.fabs(avgRemainingCorners[0] - pacmanPos[0]) + math.fabs(avgRemainingCorners[1] - pacmanPos[1])
+        if (manhattanDistance == 0):
+            return 1 # to not be caught by the trivial heuristic condition
+        return manhattanDistance
+    else:
+        return 0
+
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -453,13 +472,22 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    food = foodGrid.asList()
 
-    # find farthest food from pacman and use that as heuristic
-    farthestFoodFromPacman = 0
-    for f in food:
-        farthestFoodFromPacman = max(mazeDistance(position, f, problem.startingGameState), farthestFoodFromPacman)
-    return farthestFoodFromPacman
+    foodList = foodGrid.asList()
+
+    x, y = 0, 0
+    for f in foodList:
+        x += f[0]
+        y += f[1]
+
+    if len(foodList) != 0:
+        avgRemainingFood = (x / len(foodList), y / len(foodList))
+        pacmanPos = state[0]
+        manhattanDistance = math.fabs(avgRemainingFood[0] - pacmanPos[0]) + math.fabs(avgRemainingFood[1] - pacmanPos[1])
+        if (manhattanDistance == 0):
+            return 1 # to not be caught by the trivial heuristic condition
+        return manhattanDistance
+    return 0
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"

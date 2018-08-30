@@ -79,31 +79,43 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
-def search(problem, frontier, heuristic=nullHeuristic):
-    closed = []
+
+# class to keep track of current state, the path taken to get here and the cost of getting there
+class Node:
+    def __init__(self, state, path, cost):
+        self.state = state
+        self.path = path
+        self.cost = cost
+
+# function that takes in a problem, a data structure for keeping track of next nodes to be search, the type of search and maybe a heuristic
+def search(problem, frontier, type, heuristic=nullHeuristic):
+    closedStates = []
     startState = problem.getStartState()
 
-    if isinstance(frontier, util.Stack) or isinstance(frontier, util.Queue):
-        frontier.push((startState, []))
-    elif isinstance(frontier, util.PriorityQueue):
-        frontier.push((startState, []), heuristic(startState, problem))
+    if type == "dfs" or type == "bfs":
+        frontier.push(Node(startState, [], 0))
+    else:
+        frontier.push(Node(startState, [], 0), heuristic(startState, problem))
 
     # until solution is found, go through frontier, adding states to closed and new states to frontier
     while frontier:
-        node, actionsTaken = frontier.pop()
+        node = frontier.pop()
 
-        if not node in closed:
-            closed.append(node)
-            if problem.isGoalState(node):
-                return actionsTaken
-            succs = problem.getSuccessors(node)
+        if not node.state in closedStates:
+            closedStates.append(node.state)
+            if problem.isGoalState(node.state):
+                return node.path
+
+            # If nodes state is not a goal state, continue expanding the frontier with its successors
+            succs = problem.getSuccessors(node.state)
             for successor in succs:
                 s, d, c = successor
-                newActions = actionsTaken + [d]
-                if isinstance(frontier, util.Stack) or isinstance(frontier, util.Queue):
-                    frontier.push((s, newActions))
-                elif isinstance(frontier, util.PriorityQueue):
-                    frontier.push((s, newActions), problem.getCostOfActions(newActions) + heuristic(s, problem))
+                newPath = node.path + [d]
+
+                if type == "dfs" or type == "bfs":
+                    frontier.push(Node(s, newPath, c))
+                else:
+                    frontier.push(Node(s, newPath, node.cost + c), node.cost + c + heuristic(s, problem))
 
     # no solution could be found
     return []
@@ -122,22 +134,112 @@ def depthFirstSearch(problem):
     understand the search problem that is being passed in:
     """
     "*** YOUR CODE HERE ***"
-    return search(problem, util.Stack())
+    closedStates = []
+    startState = problem.getStartState()
+    frontier = util.Stack()
+    frontier.push(Node(startState, [], 0))
+
+    # until solution is found, go through frontier, adding states to closed and new states to frontier
+    while frontier:
+        node = frontier.pop()
+
+        if not node.state in closedStates:
+            closedStates.append(node.state)
+            if problem.isGoalState(node.state):
+                return node.path
+
+            # If nodes state is not a goal state, continue expanding the frontier with its successors
+            succs = problem.getSuccessors(node.state)
+            for successor in succs:
+                s, d, c = successor
+                newPath = node.path + [d]
+                frontier.push(Node(s, newPath, c))
+
+    # no solution could be found
+    return []
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    return search(problem, util.Queue())
+    closedStates = []
+    startState = problem.getStartState()
+    frontier = util.Queue()
+    frontier.push(Node(startState, [], 0))
+
+    # until solution is found, go through frontier, adding states to closed and new states to frontier
+    while frontier:
+        node = frontier.pop()
+
+        if not node.state in closedStates:
+            closedStates.append(node.state)
+            if problem.isGoalState(node.state):
+                return node.path
+
+            # If nodes state is not a goal state, continue expanding the frontier with its successors
+            succs = problem.getSuccessors(node.state)
+            for successor in succs:
+                s, d, c = successor
+                newPath = node.path + [d]
+                frontier.push(Node(s, newPath, c))
+
+    # no solution could be found
+    return []
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    return search(problem, util.PriorityQueue())
+    closedStates = []
+    startState = problem.getStartState()
+    frontier = util.PriorityQueue()
+    frontier.push(Node(startState, [], 0), 0)
+
+    # until solution is found, go through frontier, adding states to closed and new states to frontier
+    while frontier:
+        node = frontier.pop()
+
+        if not node.state in closedStates:
+            closedStates.append(node.state)
+            if problem.isGoalState(node.state):
+                return node.path
+
+            # If nodes state is not a goal state, continue expanding the frontier with its successors
+            succs = problem.getSuccessors(node.state)
+            for successor in succs:
+                s, d, c = successor
+                newPath = node.path + [d]
+                newCost = node.cost + c
+                frontier.push(Node(s, newPath, newCost), newCost)
+
+    # no solution could be found
+    return []
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    return search(problem, util.PriorityQueue(), heuristic)
+    closedStates = []
+    startState = problem.getStartState()
+    frontier = util.PriorityQueue()
+    frontier.push(Node(startState, [], 0), 0)
+
+    # until solution is found, go through frontier, adding states to closed and new states to frontier
+    while frontier:
+        node = frontier.pop()
+
+        if not node.state in closedStates:
+            closedStates.append(node.state)
+            if problem.isGoalState(node.state):
+                return node.path
+
+            # If nodes state is not a goal state, continue expanding the frontier with its successors
+            succs = problem.getSuccessors(node.state)
+            for successor in succs:
+                s, d, c = successor
+                newPath = node.path + [d]
+                newCost = node.cost + c
+                frontier.push(Node(s, newPath, newCost), newCost + heuristic(s, problem))
+
+    # no solution could be found
+    return []
 
 # Abbreviations
 bfs = breadthFirstSearch
