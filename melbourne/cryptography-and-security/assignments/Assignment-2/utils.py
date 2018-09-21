@@ -17,3 +17,6 @@ def intToStr(i):
         res += chr(int(intStr[:3]))
         intStr = intStr[3:]
     return res
+
+def strToIntArray(string):
+    return [ord(c) if c != " " else 0 for c in string]

@@ -2,7 +2,7 @@
 
 
 ### Question 1
-from assignment1 import gcd, modInverse
+# from assignment1 import gcd, modInverse
 # p = 4841247740021026788214420074996258540545281
 # q = 712010411572858151605922429225626518528001
 # n = p*q
@@ -18,89 +18,71 @@ from assignment1 import gcd, modInverse
 
 
 ### Question 2
-# https://medium.com/@prudywsh/how-to-generate-big-prime-numbers-miller-rabin-49e6e6af32fb
-# from prime_generator import generate_prime_number
-from Crypto.PublicKey import RSA
-from Crypto import Random
-
-# help(RSA)
-# dir(RSA)
-
-
-
-
-
-# m = bytearray(b'some message')
-# print(m)
-# for i in m:
-#     print(i)
-
-
-
-# m = 'some Message'
-# ml = int(m)
-# print(ml)
-# m2 = str(ml)
-# print(m2)
-
-# t = int("thisisamessage", 36)
-# print(t)
-# s = str(t)
-# m = 'some Message'.encode('utf8')
-# m = 'some Message'.encode('hex')
-# print(m)
-# # m = m**5
+# from assignment1 import gcd, modInverse
+# # prime_generator from: https://medium.com/@prudywsh/how-to-generate-big-prime-numbers-miller-rabin-49e6e6af32fb
+# from prime_generator import generate_prime_number, generate_prime_candidate
 #
-# random_generator = Random.new().read
+# ## On Alice side: Generate new rsa key
+# p = generate_prime_number(1024)# log(p) -> 308.17534441586166
+# q = generate_prime_number(1024) # log(q) -> 308.2001243895489
+# n = p*q # log(n) -> 616.3754094820681
+# phiN = (p-1)*(q-1) # log(phiN) -> 616.3754094820681
+# e = 2
+# while gcd(e, phiN) != 1:
+#     e += 1
+# # e -> 5
+# d = modInverse(e, phiN) # log(d) -> 615.9774694733961
 #
-# key = RSA.generate(1024, random_generator)
-# c = key.encrypt(m, 32)
+# # Borrowing the powers of Crypto.PublicKey.RSA because unblinding is taking too long with
+# # the length of the numbers involved
+# from Crypto.PublicKey import RSA
+# key = RSA.construct((n, e, d, p, q))
+# pub = key.publickey()
 #
-# print(c)
+# ## On Bobs side: Create message and blinding factor r. Blind message.
+# import utils # Simple helper for converting string to int
+# m = utils.strToInt("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur justo nulla, lobortis at tincidunt in, convallis sit amet nibh. Etiam vulputate diam ullamcorper volutpat pulvinar. ")
+# # log(m) -> 549.0318571168225
+# r = generate_prime_candidate(1024)
+# while gcd(r, n) != 1:
+#     r = generate_prime_candidate(1024)
+# # log(r) -> 308.17882904526067
+# m_blinded = pub.blind(m, r) # log(m_blinded) -> 615.8406352867902
 #
-# p = key.decrypt(c)
+# ## On Alices side: m_blinded received from Bob, sign m_blinded
+# m_blinded_signature = key.sign(m_blinded, 0)[0] # log(m_blinded_signature) -> 615.143894636624
 #
-# print(p.decode('utf8'))
-
-import utils
-# intStr = utils.strToInt("aaasome message")
-# p = utils.intToStr(intStr)
-# print(p)
-
-p = 178319560416421126516098795404787923479198619991288369991746803226075823896339226395566468236370956822016607309099932912303039705347464214350980280894546880615142891784801668100442228738495697185461381092319342853078600104786027875103868303407168893783849097704473719421290876791688821228860711202827309622833
-q = 133109942917198594159406349294359373733546098091030389432472367131217900290553510582625465777379198366192187042985885832333281342526706040385972208598858593941536206415608373548171241328041012871719775599152762109642472483461096474354215264651302948899923781085195238509480572970321476953371643652687065106617
-n = p*q
-# print(n)
-phiN = (p-1)*(q-1)
-# print(phiN)
-
-e = 2
-while gcd(e, phiN) != 1:
-    e += 1
-
-d = modInverse(e, phiN)
-
-# print(e)
-# print(d)
-
-def E(m, e, n):
-    return (m**e)%n
-def D(c, d, n):
-    return (c**d)%n
-
-m = utils.strToInt("here we gooooooo!")
-print(m)
-c = E(m, e, n)
-print(d)
-print(c)
-# p = D(c, d, n)
-# print(p)
-# m2 = utils.intToStr(p)
-# print(m2)
-
-
+# ## On Bobs side: m_blinded_signature received from Alice. Unblind to get Alices signature for m
+# m_signature = pub.unblind(m_blinded_signature, r) # log(m_signature) -> 616.1771166060526
+#
+# ## Verify that the signature is actually Alices signature
+# m_direct_signature = key.sign(m, 32)[0] # log(m_direct_signature) -> 616.1771166060526
+# print(m_signature == m_direct_signature) # True
+# print(pub.verify(m, (m_signature,))) # True
+# print(pub.verify(m, (m_direct_signature,))) # True
 
 
 ### Question 3
+
+
+
+
+
+
+
+# import utils
+# def H(M):
+#     return sum([x**2 for x in M]) % 928374928374
+# M = utils.strToIntArray("TOM MARVOLO RIDDLE")
+# M2 = utils.strToIntArray("I AM LORD VOLDEMORT")
+# print(H(M) == H(M2)) # one
+
+
+
+
+
+
+
+
 
 
